@@ -1,4 +1,4 @@
-# Senior Design Project - Zitals 
-This repository contains the complete codebase of Zitals.
+# Senior Design Project - Vitealth
+This repository contains the complete codebase of Vitealth.
 
-Copyright © ZITALS 2016. All Rights Reserved.
+Copyright © VITEALTH 2016. All Rights Reserved.
