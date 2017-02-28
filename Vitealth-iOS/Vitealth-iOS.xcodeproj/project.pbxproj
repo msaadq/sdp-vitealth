@@ -13,6 +13,15 @@
 		0C0B5D2F1E61C6D900CAA520 /* Vitealth_iOS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D2D1E61C6D900CAA520 /* Vitealth_iOS.xcdatamodeld */; };
 		0C0B5D311E61C6D900CAA520 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C0B5D301E61C6D900CAA520 /* Assets.xcassets */; };
 		0C0B5D341E61C6D900CAA520 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0C0B5D321E61C6D900CAA520 /* LaunchScreen.storyboard */; };
+		0C0B5D3E1E62FB9E00CAA520 /* MainLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D3D1E62FB9E00CAA520 /* MainLoginViewController.swift */; };
+		0C0B5D401E62FBBD00CAA520 /* EmailEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D3F1E62FBBD00CAA520 /* EmailEntryViewController.swift */; };
+		0C0B5D421E62FBCF00CAA520 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D411E62FBCF00CAA520 /* SignUpViewController.swift */; };
+		0C0B5D441E62FBE500CAA520 /* DashboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D431E62FBE500CAA520 /* DashboardViewController.swift */; };
+		0C0B5D461E62FBF300CAA520 /* FoodOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D451E62FBF300CAA520 /* FoodOptionsViewController.swift */; };
+		0C0B5D481E62FC0300CAA520 /* GlucometerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D471E62FC0300CAA520 /* GlucometerViewController.swift */; };
+		0C0B5D4A1E62FC2700CAA520 /* PatientInformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D491E62FC2700CAA520 /* PatientInformationViewController.swift */; };
+		0C0B5D4C1E62FC6900CAA520 /* PasswordEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D4B1E62FC6900CAA520 /* PasswordEntryViewController.swift */; };
+		0C0B5D4E1E62FE7800CAA520 /* DetailedLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D4D1E62FE7800CAA520 /* DetailedLogViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +33,15 @@
 		0C0B5D301E61C6D900CAA520 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0C0B5D331E61C6D900CAA520 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0C0B5D351E61C6D900CAA520 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0C0B5D3D1E62FB9E00CAA520 /* MainLoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainLoginViewController.swift; sourceTree = "<group>"; };
+		0C0B5D3F1E62FBBD00CAA520 /* EmailEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailEntryViewController.swift; sourceTree = "<group>"; };
+		0C0B5D411E62FBCF00CAA520 /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
+		0C0B5D431E62FBE500CAA520 /* DashboardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardViewController.swift; sourceTree = "<group>"; };
+		0C0B5D451E62FBF300CAA520 /* FoodOptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodOptionsViewController.swift; sourceTree = "<group>"; };
+		0C0B5D471E62FC0300CAA520 /* GlucometerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlucometerViewController.swift; sourceTree = "<group>"; };
+		0C0B5D491E62FC2700CAA520 /* PatientInformationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PatientInformationViewController.swift; sourceTree = "<group>"; };
+		0C0B5D4B1E62FC6900CAA520 /* PasswordEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryViewController.swift; sourceTree = "<group>"; };
+		0C0B5D4D1E62FE7800CAA520 /* DetailedLogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailedLogViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +74,8 @@
 		0C0B5D251E61C6D900CAA520 /* Vitealth-iOS */ = {
 			isa = PBXGroup;
 			children = (
+				0C0B5D3C1E62B8EB00CAA520 /* Model */,
+				0C0B5D3B1E62B8E300CAA520 /* Controllers */,
 				0C0B5D261E61C6D900CAA520 /* AppDelegate.swift */,
 				0C0B5D281E61C6D900CAA520 /* ViewController.swift */,
 				0C0B5D2A1E61C6D900CAA520 /* Main.storyboard */,
@@ -65,6 +85,29 @@
 				0C0B5D2D1E61C6D900CAA520 /* Vitealth_iOS.xcdatamodeld */,
 			);
 			path = "Vitealth-iOS";
+			sourceTree = "<group>";
+		};
+		0C0B5D3B1E62B8E300CAA520 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				0C0B5D3D1E62FB9E00CAA520 /* MainLoginViewController.swift */,
+				0C0B5D3F1E62FBBD00CAA520 /* EmailEntryViewController.swift */,
+				0C0B5D411E62FBCF00CAA520 /* SignUpViewController.swift */,
+				0C0B5D4B1E62FC6900CAA520 /* PasswordEntryViewController.swift */,
+				0C0B5D431E62FBE500CAA520 /* DashboardViewController.swift */,
+				0C0B5D451E62FBF300CAA520 /* FoodOptionsViewController.swift */,
+				0C0B5D471E62FC0300CAA520 /* GlucometerViewController.swift */,
+				0C0B5D491E62FC2700CAA520 /* PatientInformationViewController.swift */,
+				0C0B5D4D1E62FE7800CAA520 /* DetailedLogViewController.swift */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		0C0B5D3C1E62B8EB00CAA520 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -140,9 +183,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C0B5D421E62FBCF00CAA520 /* SignUpViewController.swift in Sources */,
+				0C0B5D441E62FBE500CAA520 /* DashboardViewController.swift in Sources */,
 				0C0B5D291E61C6D900CAA520 /* ViewController.swift in Sources */,
+				0C0B5D4A1E62FC2700CAA520 /* PatientInformationViewController.swift in Sources */,
+				0C0B5D481E62FC0300CAA520 /* GlucometerViewController.swift in Sources */,
+				0C0B5D3E1E62FB9E00CAA520 /* MainLoginViewController.swift in Sources */,
+				0C0B5D4C1E62FC6900CAA520 /* PasswordEntryViewController.swift in Sources */,
+				0C0B5D4E1E62FE7800CAA520 /* DetailedLogViewController.swift in Sources */,
 				0C0B5D271E61C6D900CAA520 /* AppDelegate.swift in Sources */,
+				0C0B5D461E62FBF300CAA520 /* FoodOptionsViewController.swift in Sources */,
 				0C0B5D2F1E61C6D900CAA520 /* Vitealth_iOS.xcdatamodeld in Sources */,
+				0C0B5D401E62FBBD00CAA520 /* EmailEntryViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -304,6 +356,7 @@
 				0C0B5D3A1E61C6D900CAA520 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
