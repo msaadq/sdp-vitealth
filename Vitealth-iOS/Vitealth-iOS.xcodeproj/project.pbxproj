@@ -22,6 +22,11 @@
 		0C0B5D4A1E62FC2700CAA520 /* PatientInformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D491E62FC2700CAA520 /* PatientInformationViewController.swift */; };
 		0C0B5D4C1E62FC6900CAA520 /* PasswordEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D4B1E62FC6900CAA520 /* PasswordEntryViewController.swift */; };
 		0C0B5D4E1E62FE7800CAA520 /* DetailedLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D4D1E62FE7800CAA520 /* DetailedLogViewController.swift */; };
+		FD6BDF271E671C1E00CBA3D0 /* InsulinPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6BDF261E671C1E00CBA3D0 /* InsulinPageViewController.swift */; };
+		FDDF90421E82BD9200C1537B /* FoodDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDDF90411E82BD9200C1537B /* FoodDetailsViewController.swift */; };
+		FDDF90441E82C02000C1537B /* FoodDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDDF90431E82C02000C1537B /* FoodDetailsTableViewCell.swift */; };
+		FDDF90461E82C29800C1537B /* FoodItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDDF90451E82C29800C1537B /* FoodItem.swift */; };
+		FDDF90481E82C30100C1537B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDDF90471E82C30100C1537B /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +47,11 @@
 		0C0B5D491E62FC2700CAA520 /* PatientInformationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PatientInformationViewController.swift; sourceTree = "<group>"; };
 		0C0B5D4B1E62FC6900CAA520 /* PasswordEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryViewController.swift; sourceTree = "<group>"; };
 		0C0B5D4D1E62FE7800CAA520 /* DetailedLogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailedLogViewController.swift; sourceTree = "<group>"; };
+		FD6BDF261E671C1E00CBA3D0 /* InsulinPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsulinPageViewController.swift; sourceTree = "<group>"; };
+		FDDF90411E82BD9200C1537B /* FoodDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodDetailsViewController.swift; sourceTree = "<group>"; };
+		FDDF90431E82C02000C1537B /* FoodDetailsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodDetailsTableViewCell.swift; sourceTree = "<group>"; };
+		FDDF90451E82C29800C1537B /* FoodItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodItem.swift; sourceTree = "<group>"; };
+		FDDF90471E82C30100C1537B /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,7 +100,11 @@
 		0C0B5D3B1E62B8E300CAA520 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				FDDF90451E82C29800C1537B /* FoodItem.swift */,
+				FDDF90471E82C30100C1537B /* Constants.swift */,
+				FDDF90431E82C02000C1537B /* FoodDetailsTableViewCell.swift */,
 				0C0B5D3D1E62FB9E00CAA520 /* MainLoginViewController.swift */,
+				FDDF90411E82BD9200C1537B /* FoodDetailsViewController.swift */,
 				0C0B5D3F1E62FBBD00CAA520 /* EmailEntryViewController.swift */,
 				0C0B5D411E62FBCF00CAA520 /* SignUpViewController.swift */,
 				0C0B5D4B1E62FC6900CAA520 /* PasswordEntryViewController.swift */,
@@ -99,6 +113,7 @@
 				0C0B5D471E62FC0300CAA520 /* GlucometerViewController.swift */,
 				0C0B5D491E62FC2700CAA520 /* PatientInformationViewController.swift */,
 				0C0B5D4D1E62FE7800CAA520 /* DetailedLogViewController.swift */,
+				FD6BDF261E671C1E00CBA3D0 /* InsulinPageViewController.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -183,17 +198,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FDDF90461E82C29800C1537B /* FoodItem.swift in Sources */,
+				FDDF90481E82C30100C1537B /* Constants.swift in Sources */,
 				0C0B5D421E62FBCF00CAA520 /* SignUpViewController.swift in Sources */,
 				0C0B5D441E62FBE500CAA520 /* DashboardViewController.swift in Sources */,
 				0C0B5D291E61C6D900CAA520 /* ViewController.swift in Sources */,
 				0C0B5D4A1E62FC2700CAA520 /* PatientInformationViewController.swift in Sources */,
 				0C0B5D481E62FC0300CAA520 /* GlucometerViewController.swift in Sources */,
+				FDDF90441E82C02000C1537B /* FoodDetailsTableViewCell.swift in Sources */,
 				0C0B5D3E1E62FB9E00CAA520 /* MainLoginViewController.swift in Sources */,
 				0C0B5D4C1E62FC6900CAA520 /* PasswordEntryViewController.swift in Sources */,
 				0C0B5D4E1E62FE7800CAA520 /* DetailedLogViewController.swift in Sources */,
 				0C0B5D271E61C6D900CAA520 /* AppDelegate.swift in Sources */,
 				0C0B5D461E62FBF300CAA520 /* FoodOptionsViewController.swift in Sources */,
 				0C0B5D2F1E61C6D900CAA520 /* Vitealth_iOS.xcdatamodeld in Sources */,
+				FDDF90421E82BD9200C1537B /* FoodDetailsViewController.swift in Sources */,
+				FD6BDF271E671C1E00CBA3D0 /* InsulinPageViewController.swift in Sources */,
 				0C0B5D401E62FBBD00CAA520 /* EmailEntryViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -317,6 +337,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = VRC5386Z3Y;
 				INFOPLIST_FILE = "Vitealth-iOS/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vitealth.Vitealth-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -330,6 +351,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = VRC5386Z3Y;
 				INFOPLIST_FILE = "Vitealth-iOS/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vitealth.Vitealth-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
