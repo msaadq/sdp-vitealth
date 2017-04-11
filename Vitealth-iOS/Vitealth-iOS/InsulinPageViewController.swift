@@ -10,15 +10,24 @@ import UIKit
 
 class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
 
-    @IBOutlet weak var excercisepicker: UIPickerView!
     
-    @IBOutlet weak var calcInsulin: UIButton!
-     var exercise: [String] = [String]()
+    
+    @IBOutlet weak var exercisepicker: UIPickerView!
+  
+    @IBOutlet weak var InsulinButton: UIButton!
+ 
+    var exercise: [String] = [String]()
+    var MealCarbs:Int=0
+    var targetBGL:Int=100
+    var nowBGL:Int=190
+    var excSelected: Int=0  //no exercise selected by default
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.excercisepicker.dataSource = self;
-        self.excercisepicker.delegate = self;
-
+        print("Here")
+        print(MealCarbs)
+        self.exercisepicker.dataSource=self
+        self.exercisepicker.delegate=self
         // Do any additional setup after loading the view.
         exercise = ["Not exercising","Long duration,Moderate Intensity","Moderate Duration, High Intensity","Moderate Duration, Moderate Intensity","Short Duration,Low Intensity"]
     }
@@ -39,24 +48,132 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     // The data to return for the row and component (column) that's being passed in
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return exercise[row]
-    }
+    internal func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)  {
+        if pickerView.tag == 0 {
+            
+            excSelected = row
+            
+        }
+        
+   }
     
+    
+    //font size
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView
+    {
+        let pickerLabel = UILabel()
+        pickerLabel.textColor = UIColor.white
+        pickerLabel.text = exercise[row]
+        // pickerLabel.font = UIFont(name: pickerLabel.font.fontName, size: 15)
+        pickerLabel.font = UIFont(name: "Helvetica Neue", size: 15) // In this use your custom font
+        pickerLabel.textAlignment = NSTextAlignment.center
+        return pickerLabel
+    }
+    /*
     // Catpure the picker view selection
-    private func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)-> String? {
+    private func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         // This method is triggered whenever the user makes a change to the picker selection.
         // The parameter named row and component represents what was selected.
-        print(exercise[row])
-         return exercise[row]
+        if pickerView.tag == 0 {
+            
+           excSelected = row
+            
+        }
     }
+ */
 
     
-    @IBAction func CalcInsulinMethod(_ sender: Any) {
-        let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take 7 units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
+
+   
+    @IBAction func ButtonPressInsulin(_ sender: Any) {
+        let insulin:Int
+        insulin=CalcInsulin()
+        let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
         alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
+    
+  
+    
+    func CalcCarbInsulinRatio(units: Int) -> Int {
+        let PrevCarbIntake=500
+        return PrevCarbIntake/units
+    }
+    
+    func CalcInsulinSensitivity(units: Int) -> Int {
+        let RuleVar=1800
+        return RuleVar/units
+    }
+    
+    func CalcExerciseComponent() -> Int {
+        let exerciseComponent:Int
+        switch nowBGL {
+        case 70..<100:
+            if excSelected==0 {
+                exerciseComponent = 0
+            } else if excSelected==1 {
+                exerciseComponent = ExerciseParameters.LowBloodSugar.LongDurModInt
+            } else if excSelected==2{
+                exerciseComponent = ExerciseParameters.LowBloodSugar.ModDurHighInt
+            } else if excSelected==3{
+                exerciseComponent = ExerciseParameters.LowBloodSugar.ModDurModInt
+            } else {
+                exerciseComponent = ExerciseParameters.LowBloodSugar.ShortDurLowInt
+            }
+            
+        case 100..<120:
+            if excSelected==0 {
+                exerciseComponent = 0
+            } else if excSelected==1 {
+                exerciseComponent = ExerciseParameters.MedBloodSugar.LongDurModInt
+            } else if excSelected==2{
+                exerciseComponent = ExerciseParameters.MedBloodSugar.ModDurHighInt
+            } else if excSelected==3{
+                exerciseComponent = ExerciseParameters.MedBloodSugar.ModDurModInt
+            } else {
+                exerciseComponent = ExerciseParameters.MedBloodSugar.ShortDurLowInt
+            }
+        case 121..<180:
+            if excSelected==0 {
+                exerciseComponent = 0
+            } else if excSelected==1 {
+                exerciseComponent = ExerciseParameters.MedHighBloodSugar.LongDurModInt
+            } else if excSelected==2{
+                exerciseComponent = ExerciseParameters.MedHighBloodSugar.ModDurHighInt
+            } else if excSelected==3{
+                exerciseComponent = ExerciseParameters.MedHighBloodSugar.ModDurModInt
+            } else {
+                exerciseComponent = ExerciseParameters.MedHighBloodSugar.ShortDurLowInt
+            }
+
+        case 180..<250:
+            if excSelected==0 {
+                exerciseComponent = 0
+            } else if excSelected==1 {
+                exerciseComponent = ExerciseParameters.HighBloodSugar.LongDurModInt
+            } else if excSelected==2{
+                exerciseComponent = ExerciseParameters.HighBloodSugar.ModDurHighInt
+            } else if excSelected==3{
+                exerciseComponent = ExerciseParameters.HighBloodSugar.ModDurModInt
+            } else {
+                exerciseComponent = ExerciseParameters.HighBloodSugar.ShortDurLowInt
+            }
+        
+        default:
+            exerciseComponent=0
+        }
+        return exerciseComponent
+    }
+ 
+
+    func CalcInsulin() -> Int {
+        let sumofunits=40 //get yesterdays sum of units
+        let InsulinUnits=(MealCarbs/CalcCarbInsulinRatio(units: sumofunits))+((nowBGL-targetBGL)/CalcInsulinSensitivity(units: sumofunits))-CalcExerciseComponent()
+       return InsulinUnits
+    }
+    
+    
+
     /*
     // MARK: - Navigation
 

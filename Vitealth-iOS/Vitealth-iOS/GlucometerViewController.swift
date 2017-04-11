@@ -14,6 +14,9 @@ class GlucometerViewController: UIViewController {
     @IBOutlet weak var readingProgress: UIProgressView!
     @IBOutlet weak var bglValue: UILabel!
     
+    
+    var MealCarbs:Int=0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -22,6 +25,7 @@ class GlucometerViewController: UIViewController {
         bglValue.text = "BGL = " + "(Pebble Not Connected)"
         pebbleStatus.text = "Not Connected"
         readingProgress.progress = 0.0
+        print(MealCarbs)
     }
 
     override func didReceiveMemoryWarning() {
@@ -36,14 +40,14 @@ class GlucometerViewController: UIViewController {
         
     }
 
-    /*
     // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?){
+        // Create a variable that you want to send
+        if(segue.identifier == "GotoInsulinPage") {
+            
+            let yourNextViewController = (segue.destination as! InsulinPageViewController)
+            yourNextViewController.MealCarbs = MealCarbs
+        }
     }
-    */
 
 }

@@ -7,16 +7,20 @@
 //
 
 import UIKit
-
+import FirebaseAuth
 class EmailEntryViewController: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var emailTextField: UITextField!
     
-    var emailInSystem = true
+    @IBOutlet weak var pwdTextField: UITextField!
+    
+    @IBOutlet weak var RegisterButton: UIButton!
+    
+    var UserInSystem = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
         emailTextField.delegate = self
         
@@ -28,6 +32,16 @@ class EmailEntryViewController: UIViewController, UITextFieldDelegate {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(EmailEntryViewController.hideKeyboard))
         tapGesture.cancelsTouchesInView = true
         self.view.addGestureRecognizer(tapGesture)
+        
+        
+        //Monitor User Auth
+       /* FIRAuth.auth()!.addStateDidChangeListener() { auth, user in
+            // 2
+            if user != nil {
+                // 3
+                self.UserInSystem=true
+            }
+        }*/
     }
     
     
@@ -44,18 +58,43 @@ class EmailEntryViewController: UIViewController, UITextFieldDelegate {
     
     @IBAction func moveToNext(_ sender: Any) {
         if let email = emailTextField.text as String! {
+            
             if(isValidEmail(testStr: email)) {
                 self.emailTextField.resignFirstResponder()
-                
-                if self.emailInSystem == true {
-                    performSegue(withIdentifier: "oldUser", sender: nil)
-                } else {
-                    performSegue(withIdentifier: "newUser", sender: nil)
+                if let pwd = pwdTextField.text as String!
+                {
+                    FIRAuth.auth()!.signIn(withEmail: email,
+                                           password: pwd){ (user, error) in
+                                            if error == nil {
+                                                
+                                                //Print into the console if successfully logged in
+                                                print("You have successfully logged in")
+                                                self.performSegue(withIdentifier: "oldUser", sender: nil)
+}
+                                            else{
+                                                let alertController = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: .alert)
+                                                
+                                                let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+                                                alertController.addAction(defaultAction)
+                                                
+                                                self.present(alertController, animated: true, completion: nil)
+
+                                            }
+                                            
+                    }
+                    
                 }
                 
+                
+                
             }
-        } else {
-            print("Invalid Email")
+            else {
+                let alertController = UIAlertController(title: "Error", message: "Please enter your credentials", preferredStyle: .alert)
+                
+                let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+                alertController.addAction(defaultAction)
+            }
+
         }
     }
     

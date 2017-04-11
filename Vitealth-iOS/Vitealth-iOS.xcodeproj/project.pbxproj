@@ -22,7 +22,10 @@
 		0C0B5D4A1E62FC2700CAA520 /* PatientInformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D491E62FC2700CAA520 /* PatientInformationViewController.swift */; };
 		0C0B5D4C1E62FC6900CAA520 /* PasswordEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D4B1E62FC6900CAA520 /* PasswordEntryViewController.swift */; };
 		0C0B5D4E1E62FE7800CAA520 /* DetailedLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D4D1E62FE7800CAA520 /* DetailedLogViewController.swift */; };
+		DDE9345699A74FAAEF35C8BB /* Pods_Vitealth_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79CD750ADA0DC47A222E5CE6 /* Pods_Vitealth_iOS.framework */; };
 		FD6BDF271E671C1E00CBA3D0 /* InsulinPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6BDF261E671C1E00CBA3D0 /* InsulinPageViewController.swift */; };
+		FD7CCCE21E929A310015D65D /* ExerciseParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7CCCE11E929A310015D65D /* ExerciseParameters.swift */; };
+		FD9CA6511E97DB8C007CB71A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FD9CA6501E97DB8C007CB71A /* GoogleService-Info.plist */; };
 		FDDF90421E82BD9200C1537B /* FoodDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDDF90411E82BD9200C1537B /* FoodDetailsViewController.swift */; };
 		FDDF90441E82C02000C1537B /* FoodDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDDF90431E82C02000C1537B /* FoodDetailsTableViewCell.swift */; };
 		FDDF90461E82C29800C1537B /* FoodItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDDF90451E82C29800C1537B /* FoodItem.swift */; };
@@ -47,7 +50,13 @@
 		0C0B5D491E62FC2700CAA520 /* PatientInformationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PatientInformationViewController.swift; sourceTree = "<group>"; };
 		0C0B5D4B1E62FC6900CAA520 /* PasswordEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryViewController.swift; sourceTree = "<group>"; };
 		0C0B5D4D1E62FE7800CAA520 /* DetailedLogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailedLogViewController.swift; sourceTree = "<group>"; };
+		79CD750ADA0DC47A222E5CE6 /* Pods_Vitealth_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Vitealth_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A8784FEDEC16C5AD30824800 /* Pods-Vitealth-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Vitealth-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Vitealth-iOS/Pods-Vitealth-iOS.release.xcconfig"; sourceTree = "<group>"; };
+		E08F52809465DE052FC21451 /* Pods-Vitealth-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Vitealth-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Vitealth-iOS/Pods-Vitealth-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		FD6BDF261E671C1E00CBA3D0 /* InsulinPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsulinPageViewController.swift; sourceTree = "<group>"; };
+		FD7CCCE11E929A310015D65D /* ExerciseParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExerciseParameters.swift; sourceTree = "<group>"; };
+		FD9CA6501E97DB8C007CB71A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../GoogleService-Info.plist"; sourceTree = "<group>"; };
+		FD9CA6521E97E87E007CB71A /* Vitealth-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Vitealth-iOS.entitlements"; sourceTree = "<group>"; };
 		FDDF90411E82BD9200C1537B /* FoodDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodDetailsViewController.swift; sourceTree = "<group>"; };
 		FDDF90431E82C02000C1537B /* FoodDetailsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodDetailsTableViewCell.swift; sourceTree = "<group>"; };
 		FDDF90451E82C29800C1537B /* FoodItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodItem.swift; sourceTree = "<group>"; };
@@ -59,6 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DDE9345699A74FAAEF35C8BB /* Pods_Vitealth_iOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +80,8 @@
 			children = (
 				0C0B5D251E61C6D900CAA520 /* Vitealth-iOS */,
 				0C0B5D241E61C6D900CAA520 /* Products */,
+				E3955169BC122043AEA1B6B6 /* Pods */,
+				D2A37BD0B7F16C84D39967C3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -84,6 +96,7 @@
 		0C0B5D251E61C6D900CAA520 /* Vitealth-iOS */ = {
 			isa = PBXGroup;
 			children = (
+				FD9CA6521E97E87E007CB71A /* Vitealth-iOS.entitlements */,
 				0C0B5D3C1E62B8EB00CAA520 /* Model */,
 				0C0B5D3B1E62B8E300CAA520 /* Controllers */,
 				0C0B5D261E61C6D900CAA520 /* AppDelegate.swift */,
@@ -92,6 +105,7 @@
 				0C0B5D301E61C6D900CAA520 /* Assets.xcassets */,
 				0C0B5D321E61C6D900CAA520 /* LaunchScreen.storyboard */,
 				0C0B5D351E61C6D900CAA520 /* Info.plist */,
+				FD9CA6501E97DB8C007CB71A /* GoogleService-Info.plist */,
 				0C0B5D2D1E61C6D900CAA520 /* Vitealth_iOS.xcdatamodeld */,
 			);
 			path = "Vitealth-iOS";
@@ -105,6 +119,7 @@
 				FDDF90431E82C02000C1537B /* FoodDetailsTableViewCell.swift */,
 				0C0B5D3D1E62FB9E00CAA520 /* MainLoginViewController.swift */,
 				FDDF90411E82BD9200C1537B /* FoodDetailsViewController.swift */,
+				FD7CCCE11E929A310015D65D /* ExerciseParameters.swift */,
 				0C0B5D3F1E62FBBD00CAA520 /* EmailEntryViewController.swift */,
 				0C0B5D411E62FBCF00CAA520 /* SignUpViewController.swift */,
 				0C0B5D4B1E62FC6900CAA520 /* PasswordEntryViewController.swift */,
@@ -125,6 +140,23 @@
 			name = Model;
 			sourceTree = "<group>";
 		};
+		D2A37BD0B7F16C84D39967C3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				79CD750ADA0DC47A222E5CE6 /* Pods_Vitealth_iOS.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E3955169BC122043AEA1B6B6 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				E08F52809465DE052FC21451 /* Pods-Vitealth-iOS.debug.xcconfig */,
+				A8784FEDEC16C5AD30824800 /* Pods-Vitealth-iOS.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -132,9 +164,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0C0B5D381E61C6D900CAA520 /* Build configuration list for PBXNativeTarget "Vitealth-iOS" */;
 			buildPhases = (
+				C829A5A0CED45F7AC9DE7064 /* [CP] Check Pods Manifest.lock */,
 				0C0B5D1F1E61C6D900CAA520 /* Sources */,
 				0C0B5D201E61C6D900CAA520 /* Frameworks */,
 				0C0B5D211E61C6D900CAA520 /* Resources */,
+				6F85A2D7F16BCD22981A7DD2 /* [CP] Embed Pods Frameworks */,
+				38AC69124FD785225B0B8318 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -159,6 +194,11 @@
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = VRC5386Z3Y;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -186,12 +226,61 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C0B5D341E61C6D900CAA520 /* LaunchScreen.storyboard in Resources */,
+				FD9CA6511E97DB8C007CB71A /* GoogleService-Info.plist in Resources */,
 				0C0B5D311E61C6D900CAA520 /* Assets.xcassets in Resources */,
 				0C0B5D2C1E61C6D900CAA520 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		38AC69124FD785225B0B8318 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Vitealth-iOS/Pods-Vitealth-iOS-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6F85A2D7F16BCD22981A7DD2 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Vitealth-iOS/Pods-Vitealth-iOS-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C829A5A0CED45F7AC9DE7064 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		0C0B5D1F1E61C6D900CAA520 /* Sources */ = {
@@ -205,6 +294,7 @@
 				0C0B5D291E61C6D900CAA520 /* ViewController.swift in Sources */,
 				0C0B5D4A1E62FC2700CAA520 /* PatientInformationViewController.swift in Sources */,
 				0C0B5D481E62FC0300CAA520 /* GlucometerViewController.swift in Sources */,
+				FD7CCCE21E929A310015D65D /* ExerciseParameters.swift in Sources */,
 				FDDF90441E82C02000C1537B /* FoodDetailsTableViewCell.swift in Sources */,
 				0C0B5D3E1E62FB9E00CAA520 /* MainLoginViewController.swift in Sources */,
 				0C0B5D4C1E62FC6900CAA520 /* PasswordEntryViewController.swift in Sources */,
@@ -333,8 +423,10 @@
 		};
 		0C0B5D391E61C6D900CAA520 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E08F52809465DE052FC21451 /* Pods-Vitealth-iOS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Vitealth-iOS/Vitealth-iOS.entitlements";
 				DEVELOPMENT_TEAM = VRC5386Z3Y;
 				INFOPLIST_FILE = "Vitealth-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -347,8 +439,10 @@
 		};
 		0C0B5D3A1E61C6D900CAA520 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A8784FEDEC16C5AD30824800 /* Pods-Vitealth-iOS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Vitealth-iOS/Vitealth-iOS.entitlements";
 				DEVELOPMENT_TEAM = VRC5386Z3Y;
 				INFOPLIST_FILE = "Vitealth-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;

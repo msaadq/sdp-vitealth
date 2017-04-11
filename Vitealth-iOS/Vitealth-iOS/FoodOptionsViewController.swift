@@ -15,10 +15,10 @@ class FoodOptionsViewController: UIViewController , SendMealBackProtocol{
     @IBOutlet weak var DisplayLabel: UILabel!
  
     @IBOutlet weak var nextbutton: UIButton!
-     var selectedOption:FoodItem?
+     var selectedOption=FoodItem()
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         
         // Do any additional setup after loading the view.
         // Hiding keyboard
@@ -35,16 +35,10 @@ class FoodOptionsViewController: UIViewController , SendMealBackProtocol{
     
     
 
-    /*
-    // MARK: - Navigation
+   
+    
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+ 
     @IBAction func FindButtonPressed(_ sender: Any) {
         print("Successful button press")
         if searchfood.text?.isEmpty == true
@@ -119,12 +113,12 @@ class FoodOptionsViewController: UIViewController , SendMealBackProtocol{
     func setMealDisplay(valueSent: FoodItem)
     {
         
-        var calories:String?
+        var carbs:String?
         
         self.selectedOption = valueSent
-        calories=NSString(format: "%d", Int(valueSent.calories)) as String
-        if calories != nil
-        {self.DisplayLabel.text = "Your food contains:"+calories!+" calories"
+        carbs=NSString(format: "%d", Int(valueSent.carbs)) as String
+        if carbs != nil
+        {self.DisplayLabel.text = "Your food contains:"+carbs!+" carbs"
         self.DisplayLabel.isHidden=false
         self.nextbutton.setTitle("Next", for: .normal)
         }
@@ -155,6 +149,19 @@ class FoodOptionsViewController: UIViewController , SendMealBackProtocol{
             }
         }
     }
+    
+    // MARK: - Navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?){
+        // Create a variable that you want to send
+        if(segue.identifier == "GotoGlucPage") {
+            
+            let yourNextViewController = (segue.destination as! GlucometerViewController)
+            //let carbohydrates = Int((self.selectedOption.carbs)!)
+                yourNextViewController.MealCarbs = Int(self.selectedOption.carbs)
+           
+        }
+    }
+
 
     
 }
