@@ -22,10 +22,10 @@
 		0C0B5D4A1E62FC2700CAA520 /* PatientInformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D491E62FC2700CAA520 /* PatientInformationViewController.swift */; };
 		0C0B5D4C1E62FC6900CAA520 /* PasswordEntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D4B1E62FC6900CAA520 /* PasswordEntryViewController.swift */; };
 		0C0B5D4E1E62FE7800CAA520 /* DetailedLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0B5D4D1E62FE7800CAA520 /* DetailedLogViewController.swift */; };
+		9386E18D1E9D56DB003DE290 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9386E18C1E9D56DB003DE290 /* GoogleService-Info.plist */; };
 		DDE9345699A74FAAEF35C8BB /* Pods_Vitealth_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79CD750ADA0DC47A222E5CE6 /* Pods_Vitealth_iOS.framework */; };
 		FD6BDF271E671C1E00CBA3D0 /* InsulinPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6BDF261E671C1E00CBA3D0 /* InsulinPageViewController.swift */; };
 		FD7CCCE21E929A310015D65D /* ExerciseParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7CCCE11E929A310015D65D /* ExerciseParameters.swift */; };
-		FD9CA6511E97DB8C007CB71A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FD9CA6501E97DB8C007CB71A /* GoogleService-Info.plist */; };
 		FDDF90421E82BD9200C1537B /* FoodDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDDF90411E82BD9200C1537B /* FoodDetailsViewController.swift */; };
 		FDDF90441E82C02000C1537B /* FoodDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDDF90431E82C02000C1537B /* FoodDetailsTableViewCell.swift */; };
 		FDDF90461E82C29800C1537B /* FoodItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDDF90451E82C29800C1537B /* FoodItem.swift */; };
@@ -51,11 +51,11 @@
 		0C0B5D4B1E62FC6900CAA520 /* PasswordEntryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordEntryViewController.swift; sourceTree = "<group>"; };
 		0C0B5D4D1E62FE7800CAA520 /* DetailedLogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailedLogViewController.swift; sourceTree = "<group>"; };
 		79CD750ADA0DC47A222E5CE6 /* Pods_Vitealth_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Vitealth_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9386E18C1E9D56DB003DE290 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A8784FEDEC16C5AD30824800 /* Pods-Vitealth-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Vitealth-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Vitealth-iOS/Pods-Vitealth-iOS.release.xcconfig"; sourceTree = "<group>"; };
 		E08F52809465DE052FC21451 /* Pods-Vitealth-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Vitealth-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Vitealth-iOS/Pods-Vitealth-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		FD6BDF261E671C1E00CBA3D0 /* InsulinPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsulinPageViewController.swift; sourceTree = "<group>"; };
 		FD7CCCE11E929A310015D65D /* ExerciseParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExerciseParameters.swift; sourceTree = "<group>"; };
-		FD9CA6501E97DB8C007CB71A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../GoogleService-Info.plist"; sourceTree = "<group>"; };
 		FD9CA6521E97E87E007CB71A /* Vitealth-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Vitealth-iOS.entitlements"; sourceTree = "<group>"; };
 		FDDF90411E82BD9200C1537B /* FoodDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodDetailsViewController.swift; sourceTree = "<group>"; };
 		FDDF90431E82C02000C1537B /* FoodDetailsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodDetailsTableViewCell.swift; sourceTree = "<group>"; };
@@ -105,7 +105,7 @@
 				0C0B5D301E61C6D900CAA520 /* Assets.xcassets */,
 				0C0B5D321E61C6D900CAA520 /* LaunchScreen.storyboard */,
 				0C0B5D351E61C6D900CAA520 /* Info.plist */,
-				FD9CA6501E97DB8C007CB71A /* GoogleService-Info.plist */,
+				9386E18C1E9D56DB003DE290 /* GoogleService-Info.plist */,
 				0C0B5D2D1E61C6D900CAA520 /* Vitealth_iOS.xcdatamodeld */,
 			);
 			path = "Vitealth-iOS";
@@ -226,7 +226,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C0B5D341E61C6D900CAA520 /* LaunchScreen.storyboard in Resources */,
-				FD9CA6511E97DB8C007CB71A /* GoogleService-Info.plist in Resources */,
+				9386E18D1E9D56DB003DE290 /* GoogleService-Info.plist in Resources */,
 				0C0B5D311E61C6D900CAA520 /* Assets.xcassets in Resources */,
 				0C0B5D2C1E61C6D900CAA520 /* Main.storyboard in Resources */,
 			);
