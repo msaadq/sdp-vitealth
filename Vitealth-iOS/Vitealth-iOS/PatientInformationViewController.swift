@@ -39,9 +39,9 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
     var typeSelected: Int=0
     
     
-    @IBOutlet weak var savebutton: UIButton!
+    //@IBOutlet weak var savebutton: UIButton!
     
-    @IBOutlet weak var cancelbutton: UIButton!
+    //@IBOutlet weak var cancelbutton: UIButton!
     
    // let ref = FIRDatabase.database().reference(withPath: "patient")
     
@@ -61,7 +61,7 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
         var name="Display Name"
         let user = FIRAuth.auth()?.currentUser;
         if ((user ) != nil) {
-            name=(user?.displayName)!
+            name=(user?.displayName ?? "Invalid Name")!
             displayname.text=name
         }
         self.Typepicker.dataSource=self
@@ -78,7 +78,7 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
         
        // scrollview = UIScrollView(frame: view.bounds)
     //scrollview.backgroundColor = UIColor.black
-        scrollview.contentSize = CGSize(width:self.view.frame.width, height:self.view.frame.height+100)
+        //scrollview.contentSize = CGSize(width:self.view.frame.width, height:self.view.frame.height+100)
        // scrollview.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight
     }
 
