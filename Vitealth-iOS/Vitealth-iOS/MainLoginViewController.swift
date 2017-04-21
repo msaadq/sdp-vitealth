@@ -10,9 +10,11 @@ import UIKit
 
 class MainLoginViewController: UIViewController {
 
+    @IBOutlet weak var connect: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        connect.layer.borderWidth = 1
+        connect.layer.borderColor = UIColor.white.cgColor
         // Do any additional setup after loading the view.
     }
     

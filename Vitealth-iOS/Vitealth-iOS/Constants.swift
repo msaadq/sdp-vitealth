@@ -5,9 +5,11 @@
 //  Created by Javeria Afzal on 3/22/17.
 //  Copyright © 2017 Saad Qureshi. All rights reserved.
 //
-
+import Foundation
 struct Constants {
-    
+    struct Firebase{
+        static let BASE_URL = "https://vitealth-a8c1a.firebaseio.com/"
+    }
     
     struct Nutritionix{
         static let APIBaseURL = "https://api.nutritionix.com/v1_1"

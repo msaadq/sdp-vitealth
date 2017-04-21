@@ -69,7 +69,7 @@ class SignUpViewController: UIViewController {
                                            FIRAuth.auth()!.signIn(withEmail: self.email.text!,password: self.password.text!)
                                            //set username
                                             let changeRequest = FIRAuth.auth()?.currentUser?.profileChangeRequest()
-                                            let UserName=self.firstName.text! + self.lastName.text!
+                                            let UserName=self.firstName.text! + " "+self.lastName.text!
                                             print(UserName)
                                             changeRequest?.displayName = UserName
                                             changeRequest?.commitChanges() { (error) in
@@ -120,13 +120,10 @@ class SignUpViewController: UIViewController {
     }
     
     func keyboardWillHide(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y != 0{
-                self.view.frame.origin.y += keyboardSize.height / 2
-            }
+        if self.view.frame.origin.y != 0{
+            self.view.frame.origin.y = 0
         }
     }
-    
 
     /*
     // MARK: - Navigation

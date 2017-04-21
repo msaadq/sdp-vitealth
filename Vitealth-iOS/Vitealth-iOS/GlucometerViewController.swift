@@ -16,7 +16,7 @@ class GlucometerViewController: UIViewController {
     
     
     var MealCarbs:Int=0
-    
+    var BGL:UInt32=0
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -38,6 +38,21 @@ class GlucometerViewController: UIViewController {
         pebbleStatus.textColor = UIColor.yellow
         readingProgress.progress = 0.5
         
+        
+        
+        //for now generate random no.
+        let randomBGL:UInt32 = arc4random_uniform(260)+50 // range is 50 to 310
+        print(randomBGL)
+        BGL=randomBGL
+        
+        //wait
+        sleep(5)
+        pebbleStatus.text = "Connected"
+        pebbleStatus.textColor = UIColor.green
+        readingProgress.progress = 1
+        bglValue.text = "BGL = " + "\(randomBGL)"+" mg/dl "
+
+        
     }
 
     // MARK: - Navigation
@@ -47,6 +62,7 @@ class GlucometerViewController: UIViewController {
             
             let yourNextViewController = (segue.destination as! InsulinPageViewController)
             yourNextViewController.MealCarbs = MealCarbs
+            yourNextViewController.nowBGL = Int(BGL)
         }
     }
 

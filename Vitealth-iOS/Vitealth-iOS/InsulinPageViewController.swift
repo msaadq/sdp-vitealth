@@ -7,7 +7,8 @@
 //
 
 import UIKit
-
+import FirebaseDatabase
+import FirebaseAuth
 class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
 
     
@@ -19,13 +20,14 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     var exercise: [String] = [String]()
     var MealCarbs:Int=0
     var targetBGL:Int=100
-    var nowBGL:Int=190
+    var nowBGL:Int=0
     var excSelected: Int=0  //no exercise selected by default
-    
+    let ref = FIRDatabase.database().reference(withPath: "dose")
     override func viewDidLoad() {
         super.viewDidLoad()
         print("Here")
         print(MealCarbs)
+        print(nowBGL)
         self.exercisepicker.dataSource=self
         self.exercisepicker.delegate=self
         // Do any additional setup after loading the view.
@@ -69,18 +71,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         pickerLabel.textAlignment = NSTextAlignment.center
         return pickerLabel
     }
-    /*
-    // Catpure the picker view selection
-    private func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        // This method is triggered whenever the user makes a change to the picker selection.
-        // The parameter named row and component represents what was selected.
-        if pickerView.tag == 0 {
-            
-           excSelected = row
-            
-        }
-    }
- */
+    
 
     
 
@@ -88,6 +79,19 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     @IBAction func ButtonPressInsulin(_ sender: Any) {
         let insulin:Int
         insulin=CalcInsulin()
+        let user = FIRAuth.auth()?.currentUser;
+        
+        if ((user) != nil) {
+            print("User is signed in.")
+        } else {
+            print("No user is signed in.")
+        }
+        let insulindose = Dose(insulinQuant: insulin,insulinType:"Humalog",glucose:nowBGL,user: user!.email!,timeStamp:String(describing: NSDate().timeIntervalSince1970))
+        print("Object created")
+        print(insulindose.user)
+        print((user?.uid)!)
+        let UserDoseRef = self.ref.childByAutoId()
+        UserDoseRef.setValue(insulindose.toAnyObject())
         let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
         alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
         self.present(alert, animated: true, completion: nil)
