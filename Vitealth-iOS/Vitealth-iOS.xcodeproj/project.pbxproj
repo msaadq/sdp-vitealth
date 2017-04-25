@@ -25,6 +25,7 @@
 		9386E18D1E9D56DB003DE290 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9386E18C1E9D56DB003DE290 /* GoogleService-Info.plist */; };
 		DDE9345699A74FAAEF35C8BB /* Pods_Vitealth_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79CD750ADA0DC47A222E5CE6 /* Pods_Vitealth_iOS.framework */; };
 		FD2B3E6E1E9E6D39000DB418 /* InsulinType.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD2B3E6D1E9E6D39000DB418 /* InsulinType.swift */; };
+		FD5869071EAA4EEF00FE61A1 /* Patient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5869061EAA4EEF00FE61A1 /* Patient.swift */; };
 		FD6BDF271E671C1E00CBA3D0 /* InsulinPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6BDF261E671C1E00CBA3D0 /* InsulinPageViewController.swift */; };
 		FD7CCCE21E929A310015D65D /* ExerciseParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7CCCE11E929A310015D65D /* ExerciseParameters.swift */; };
 		FD81BA2F1EA2561A00DCEDD3 /* Dose.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD81BA2E1EA2561A00DCEDD3 /* Dose.swift */; };
@@ -57,6 +58,7 @@
 		A8784FEDEC16C5AD30824800 /* Pods-Vitealth-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Vitealth-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Vitealth-iOS/Pods-Vitealth-iOS.release.xcconfig"; sourceTree = "<group>"; };
 		E08F52809465DE052FC21451 /* Pods-Vitealth-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Vitealth-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Vitealth-iOS/Pods-Vitealth-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		FD2B3E6D1E9E6D39000DB418 /* InsulinType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsulinType.swift; sourceTree = "<group>"; };
+		FD5869061EAA4EEF00FE61A1 /* Patient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Patient.swift; sourceTree = "<group>"; };
 		FD6BDF261E671C1E00CBA3D0 /* InsulinPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsulinPageViewController.swift; sourceTree = "<group>"; };
 		FD7CCCE11E929A310015D65D /* ExerciseParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExerciseParameters.swift; sourceTree = "<group>"; };
 		FD81BA2E1EA2561A00DCEDD3 /* Dose.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dose.swift; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 		0C0B5D3B1E62B8E300CAA520 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				FD5869061EAA4EEF00FE61A1 /* Patient.swift */,
 				FD2B3E6D1E9E6D39000DB418 /* InsulinType.swift */,
 				FDDF90451E82C29800C1537B /* FoodItem.swift */,
 				FDDF90471E82C30100C1537B /* Constants.swift */,
@@ -304,6 +307,7 @@
 				FDDF90441E82C02000C1537B /* FoodDetailsTableViewCell.swift in Sources */,
 				0C0B5D3E1E62FB9E00CAA520 /* MainLoginViewController.swift in Sources */,
 				0C0B5D4C1E62FC6900CAA520 /* PasswordEntryViewController.swift in Sources */,
+				FD5869071EAA4EEF00FE61A1 /* Patient.swift in Sources */,
 				0C0B5D4E1E62FE7800CAA520 /* DetailedLogViewController.swift in Sources */,
 				FD81BA2F1EA2561A00DCEDD3 /* Dose.swift in Sources */,
 				0C0B5D271E61C6D900CAA520 /* AppDelegate.swift in Sources */,

@@ -75,19 +75,21 @@ class SignUpViewController: UIViewController {
                                             changeRequest?.commitChanges() { (error) in
                                                 if error == nil {
                                                     print("User name added")
+                                                    self.performSegue(withIdentifier: "signUp", sender: nil)
                                                 } else {
                                                      print("User name not added")
+                                                     self.performSegue(withIdentifier: "backToLogin", sender: nil)
                                                 }
                                             }
                                             //listener to check
-                                            FIRAuth.auth()?.addStateDidChangeListener { auth, user in
-                                                if user != nil {
-                                                    self.performSegue(withIdentifier: "signUp", sender: nil)
-                                                } else {
+                                            //FIRAuth.auth()?.addStateDidChangeListener { auth, user in
+                                               // if user != nil {
+                                                //    self.performSegue(withIdentifier: "signUp", sender: nil)
+                                               // } else {
                                                     // No User is signed in. Show user the login screen
-                                                    self.performSegue(withIdentifier: "backToLogin", sender: nil)
-                                                }
-                                            }
+                                               //     self.performSegue(withIdentifier: "backToLogin", sender: nil)
+                                              //  }
+                                           // }
                                             
                                         }
                                         else {

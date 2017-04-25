@@ -22,7 +22,8 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     var targetBGL:Int=100
     var nowBGL:Int=0
     var excSelected: Int=0  //no exercise selected by default
-    let ref = FIRDatabase.database().reference(withPath: "dose")
+    let ref = FIRDatabase.database().reference()
+    let doseref = FIRDatabase.database().reference(withPath: "dose")
     override func viewDidLoad() {
         super.viewDidLoad()
         print("Here")
@@ -77,24 +78,99 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
 
    
     @IBAction func ButtonPressInsulin(_ sender: Any) {
-        let insulin:Int
-        insulin=CalcInsulin()
+        var insulin:Int=0
+        var yesterday_insulin:Int=0
+        var bolustype:String = "Not known"
+        var FirstTimeNewDiabetic:Bool=true
+        
+        
+        
         let user = FIRAuth.auth()?.currentUser;
         
         if ((user) != nil) {
             print("User is signed in.")
+            //get time
+            let userID = user?.uid
+            let int_nowtime=Int(NSDate().timeIntervalSince1970)
+            let nowtime=String(describing:int_nowtime )
+            
+            //get his bolus insulin
+            ref.child("patient").child(userID!).observeSingleEvent(of: .value, with: { (snapshot) in
+                if !snapshot.exists() {
+                    print("oh snap")
+                    return }
+                let userpatient = snapshot.value as? NSDictionary
+                bolustype = (userpatient?["bolus"] as? String)!
+                print(bolustype)
+                //is user logged in the first time
+                FirstTimeNewDiabetic=(userpatient?["isNew"] as? Bool)!
+                print(FirstTimeNewDiabetic)
+                
+                
+                
+                if FirstTimeNewDiabetic {
+                    //if user is using the portal for the first time, access the values from his information
+                    yesterday_insulin=(userpatient?["initialInsulin"] as? Int)!
+                    insulin=self.CalcInsulin(sumofunits: yesterday_insulin)
+                    self.ref.child("patient").child(userID!).updateChildValues(["isNew": false])
+                    
+                    print("value set false")
+                    let insulindose = Dose(insulinQuant: insulin,mealCarbs:self.MealCarbs,insulinType:bolustype,glucose:self.nowBGL,user: user!.email!,timeStamp:nowtime)
+                    print("Object created")
+                    print(insulindose.user)
+                    print((user?.uid)!)
+                    let UserDoseRef = self.doseref.child(userID!).child(nowtime)
+                    UserDoseRef.setValue(insulindose.toAnyObject())
+                }
+                else{
+                    //86400 seconds in one day
+                    //if user is not using the portal for the first time, access yesterdays values
+                    let batchSize=86400
+                    let offset=int_nowtime-86400
+                    self.ref.child("dose").child(userID!).queryOrderedByKey().queryStarting(atValue: String(offset)).queryEnding(atValue: String(offset+batchSize)).observeSingleEvent(of: .value, with: { (snapshot) in
+                        if !snapshot.exists() {
+                            print("oh snap")
+                            return }
+                        print("get daily doses")
+                      
+                        var dailydoses = [Dose]()
+                        for item in snapshot.children {
+                        let dailydose = Dose(snapshot: item as! FIRDataSnapshot)
+                        dailydoses.append(dailydose)
+                        yesterday_insulin=yesterday_insulin+dailydose.insulinQuant
+                        }
+                        
+                        
+                        
+                        print(yesterday_insulin)
+                        
+                        insulin=self.CalcInsulin(sumofunits:  yesterday_insulin) //for now
+                        print(insulin)
+                        let insulindose = Dose(insulinQuant: insulin,mealCarbs:self.MealCarbs,insulinType:bolustype,glucose:self.nowBGL,user: user!.email!,timeStamp:nowtime)
+                        print("Object created")
+                        print(insulindose.user)
+                        print((user?.uid)!)
+                        let UserDoseRef = self.doseref.child(userID!).child(nowtime)
+                        UserDoseRef.setValue(insulindose.toAnyObject())
+                    })
+
+                                    }
+
+                
+                
+                let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
+                alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+                
+            }) { (error) in
+                print(error.localizedDescription)
+            }
+
         } else {
             print("No user is signed in.")
         }
-        let insulindose = Dose(insulinQuant: insulin,insulinType:"Humalog",glucose:nowBGL,user: user!.email!,timeStamp:String(describing: NSDate().timeIntervalSince1970))
-        print("Object created")
-        print(insulindose.user)
-        print((user?.uid)!)
-        let UserDoseRef = self.ref.childByAutoId()
-        UserDoseRef.setValue(insulindose.toAnyObject())
-        let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
+        
+        
     }
     
   
@@ -170,8 +246,10 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
  
 
-    func CalcInsulin() -> Int {
-        let sumofunits=40 //get yesterdays sum of units
+    func CalcInsulin(sumofunits: Int) -> Int {
+        //get yesterdays sum of units
+        let ISF=CalcInsulinSensitivity(units: sumofunits)
+        print(ISF)
         let InsulinUnits=(MealCarbs/CalcCarbInsulinRatio(units: sumofunits))+((nowBGL-targetBGL)/CalcInsulinSensitivity(units: sumofunits))-CalcExerciseComponent()
        return InsulinUnits
     }
