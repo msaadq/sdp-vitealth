@@ -17,6 +17,8 @@ class SignUpViewController: UIViewController {
     @IBOutlet weak var email: UITextField!
     @IBOutlet weak var password: UITextField!
     
+    
+    var UserName:String="Display Name"
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -69,9 +71,9 @@ class SignUpViewController: UIViewController {
                                            FIRAuth.auth()!.signIn(withEmail: self.email.text!,password: self.password.text!)
                                            //set username
                                             let changeRequest = FIRAuth.auth()?.currentUser?.profileChangeRequest()
-                                            let UserName=self.firstName.text! + " "+self.lastName.text!
-                                            print(UserName)
-                                            changeRequest?.displayName = UserName
+                                            self.UserName=self.firstName.text! + " "+self.lastName.text!
+                                            print(self.UserName)
+                                            changeRequest?.displayName = self.UserName
                                             changeRequest?.commitChanges() { (error) in
                                                 if error == nil {
                                                     print("User name added")
@@ -124,6 +126,17 @@ class SignUpViewController: UIViewController {
     func keyboardWillHide(notification: NSNotification) {
         if self.view.frame.origin.y != 0{
             self.view.frame.origin.y = 0
+        }
+    }
+
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?){
+        // Create a variable that you want to send
+        if(segue.identifier == "signUp") {
+            
+            let yourNextViewController = (segue.destination as! PatientInformationViewController)
+            yourNextViewController.name = UserName
+            
         }
     }
 

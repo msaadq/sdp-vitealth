@@ -45,6 +45,12 @@ class GlucometerViewController: UIViewController {
         print(randomBGL)
         BGL=randomBGL
         
+        let date = NSDate(timeIntervalSince1970: 1493101250)
+        print(date)
+            
+        
+        
+        
         //wait
         sleep(5)
         pebbleStatus.text = "Connected"

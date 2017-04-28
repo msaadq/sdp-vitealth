@@ -81,18 +81,31 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         var insulin:Int=0
         var yesterday_insulin:Int=0
         var bolustype:String = "Not known"
-        var FirstTimeNewDiabetic:Bool=true
+        var FirstTimeUser:Bool=true
+        var lastchecked:Int=0
         
+        
+        let int_nowtime=Int(NSDate().timeIntervalSince1970)
+        let nowtime=String(describing:int_nowtime )
+        let currentDate = NSDate()
+        let dateFormatter = DateFormatter()
+        //use the locale settings of the device by default
+        dateFormatter.dateFormat = "EEEE, MMMM dd, yyyy"
+        dateFormatter.locale = NSLocale.current
+        let dayDate = dateFormatter.string(from: currentDate as Date)
+        print(dayDate)
+        
+
         
         
         let user = FIRAuth.auth()?.currentUser;
         
         if ((user) != nil) {
             print("User is signed in.")
+            
+            
             //get time
             let userID = user?.uid
-            let int_nowtime=Int(NSDate().timeIntervalSince1970)
-            let nowtime=String(describing:int_nowtime )
             
             //get his bolus insulin
             ref.child("patient").child(userID!).observeSingleEvent(of: .value, with: { (snapshot) in
@@ -103,35 +116,54 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                 bolustype = (userpatient?["bolus"] as? String)!
                 print(bolustype)
                 //is user logged in the first time
-                FirstTimeNewDiabetic=(userpatient?["isNew"] as? Bool)!
-                print(FirstTimeNewDiabetic)
+                FirstTimeUser=(userpatient?["isnewUser"] as? Bool)!
+                print(FirstTimeUser)
                 
                 
                 
-                if FirstTimeNewDiabetic {
+                if FirstTimeUser {
                     //if user is using the portal for the first time, access the values from his information
                     yesterday_insulin=(userpatient?["initialInsulin"] as? Int)!
                     insulin=self.CalcInsulin(sumofunits: yesterday_insulin)
-                    self.ref.child("patient").child(userID!).updateChildValues(["isNew": false])
-                    
+                    self.ref.child("patient").child(userID!).updateChildValues(["isnewUser": false])
+                    self.ref.child("patient").child(userID!).updateChildValues(["lastseen": nowtime])
                     print("value set false")
                     let insulindose = Dose(insulinQuant: insulin,mealCarbs:self.MealCarbs,insulinType:bolustype,glucose:self.nowBGL,user: user!.email!,timeStamp:nowtime)
+                    
                     print("Object created")
                     print(insulindose.user)
                     print((user?.uid)!)
-                    let UserDoseRef = self.doseref.child(userID!).child(nowtime)
+                    let UserDoseRef = self.doseref.child(userID!).child(dayDate).child(nowtime)
                     UserDoseRef.setValue(insulindose.toAnyObject())
                 }
                 else{
                     //86400 seconds in one day
                     //if user is not using the portal for the first time, access yesterdays values
-                    let batchSize=86400
-                    let offset=int_nowtime-86400
-                    self.ref.child("dose").child(userID!).queryOrderedByKey().queryStarting(atValue: String(offset)).queryEnding(atValue: String(offset+batchSize)).observeSingleEvent(of: .value, with: { (snapshot) in
+                    //get value for lastseen
+                    lastchecked=(userpatient?["lastseen"] as? Int)!
+                    let offline_time=int_nowtime-lastchecked
+                    var dormantDays:Int=0
+                    if offline_time > 86400  //if user was last seen more than a day ago
+                    {
+                        
+                        if offline_time > 86400 && offline_time < 172800 {
+                            dormantDays=1
+                        } else if offline_time > 172800 && offline_time < 259200  {
+                            dormantDays=2
+                        }
+                    }
+                   
+                    let intfetchDate=NSDate(timeIntervalSince1970:TimeInterval(int_nowtime-dormantDays*86400))
+                    let fechDate=dateFormatter.string(from: intfetchDate as Date)
+                    
+                    self.ref.child("dose").child(userID!).child(fechDate).observeSingleEvent(of: .value, with: { (snapshot) in
                         if !snapshot.exists() {
                             print("oh snap")
                             return }
-                        print("get daily doses")
+                        
+                        
+                        //if exists
+                        print("get all daily doses")
                       
                         var dailydoses = [Dose]()
                         for item in snapshot.children {
@@ -249,7 +281,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     func CalcInsulin(sumofunits: Int) -> Int {
         //get yesterdays sum of units
         let ISF=CalcInsulinSensitivity(units: sumofunits)
-        print(ISF)
+        print("isf is",ISF)
         let InsulinUnits=(MealCarbs/CalcCarbInsulinRatio(units: sumofunits))+((nowBGL-targetBGL)/CalcInsulinSensitivity(units: sumofunits))-CalcExerciseComponent()
        return InsulinUnits
     }

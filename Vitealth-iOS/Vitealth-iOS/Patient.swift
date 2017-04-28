@@ -13,21 +13,22 @@ class Patient: NSObject {
     var ketone:Int = 0
     var h1bc:Int = 0
     var birthdate:String=String(describing: NSDate())
-    var gender="male"
-    var type = "Type 2"
-    var BloodType = "None"
-    var basal = "None"
-    var bolus = "None"
-    
-     var dremail="None"
+    var gender:String? = nil
+    var type:String? = nil
+    var BloodType:String? = nil
+    var basal :String? = nil
+    var bolus :String? = nil
+    var dremail:String? = nil
     var isNew:Bool=true
     var initialInsulin:Int=0
-    var useremail="None"
-    var timeStamp:String=String(describing: NSDate())
+    var useremail:String? = nil
+    var timeStamp:String? = nil
+    var lastseen:Int = 0
+    var isnewUser:Bool = true
    
     
     override init(){}
-    init(weight:Int,height:Int,ketone:Int,h1bc:Int,birthdate:String,gender:String,type:String,BloodType:String,basal:String,bolus:String,isNew:Bool,initialInsulin:Int,dremail:String,useremail:String,timeStamp:String){
+    init(weight:Int,height:Int,ketone:Int,h1bc:Int,birthdate:String,gender:String,type:String,BloodType:String,basal:String,bolus:String,isNew:Bool,initialInsulin:Int,dremail:String,useremail:String,timeStamp:String,lastseen:Int,isnewUser:Bool){
         self.weight=weight
         self.height=height
         self.ketone=ketone
@@ -43,6 +44,8 @@ class Patient: NSObject {
         self.initialInsulin=initialInsulin
         self.useremail=useremail
         self.timeStamp=timeStamp
+        self.lastseen=lastseen
+        self.isnewUser=isnewUser
     }
     
     
@@ -53,16 +56,18 @@ class Patient: NSObject {
             "ketone":ketone,
             "h1bc":h1bc,
             "birthdate":birthdate,
-            "gender":gender,
-            "type":type,
-            "BloodType":BloodType,
-            "basal":basal,
-            "bolus":bolus,
-            "dremail":dremail,
+            "gender":gender ?? "",
+            "type":type ?? "",
+            "BloodType":BloodType ?? "",
+            "basal":basal ?? "",
+            "bolus":bolus ?? "",
+            "dremail":dremail ?? "",
             "isNew":isNew,
             "initialInsulin":initialInsulin,
-            "useremail": useremail,
-            "timeStamp": timeStamp
+            "useremail": useremail ?? "",
+            "timeStamp": timeStamp ?? "",
+            "lastseen": lastseen,
+            "isnewUser":isnewUser
         ]
     }
 }

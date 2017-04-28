@@ -37,6 +37,8 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
     
     @IBOutlet weak var diabetesStack: UIStackView!
     @IBOutlet weak var yestUnits: UITextField!
+    
+    var name="Display Name"
     var bloodGroups: [String] = [String]()
     var gender: [String] = [String]()
     var types: [String] = [String]()
@@ -72,12 +74,10 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
         //toggle activation
         //newSwitch.addTarget(self, action: Selector(("switchIsChanged:")), for: UIControlEvents.valueChanged)
         print("Entered")
-        var name="Display Name"
-        let user = FIRAuth.auth()?.currentUser;
-        if ((user ) != nil) {
-            name=(user?.displayName)!
-            displayname.text=name
-        }
+        
+        
+        displayname.text=name
+        
         self.Typepicker.dataSource=self
         self.Typepicker.delegate=self
         self.Genderpicker.dataSource=self
@@ -188,7 +188,9 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
     @IBAction func SavebuttonPressed(_ sender: Any) {
         let user = FIRAuth.auth()?.currentUser;
         var isnewdiabetic:Bool
+        var isf:Int=0
         var insulinsum:Int=0
+        var Rulevar=1800
         if ((user) != nil) {
             print("User is signed in.")
         } else {
@@ -201,14 +203,17 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
         if newSwitch.isOn
         {
             isnewdiabetic=true
-            insulinsum=Int(yestUnits.text!)!
+            
+            
             
         }
         else{
             isnewdiabetic=false
+            insulinsum=Int(yestUnits.text!)!
+            isf=Rulevar/insulinsum
         }
         
-        let thisPatient = Patient(weight: Int(weight.text!)!,height:Int(height.text!)!,ketone:Int(ketonelevel.text!)!,h1bc:Int(h1bc.text!)!,birthdate:String(describing: birthdate),gender:gender[genderSelected],type:types[typeSelected],BloodType:bloodGroups[bloodSelected],basal:basalinsulins[basalSelected],bolus:bolusinsulins[bolusSelected],isNew:isnewdiabetic,initialInsulin:insulinsum,dremail:dremail.text!,useremail: user!.email!,timeStamp:String(describing: NSDate().timeIntervalSince1970))
+        let thisPatient = Patient(weight: Int(weight.text!)!,height:Int(height.text!)!,ketone:Int(ketonelevel.text!)!,h1bc:Int(h1bc.text!)!,birthdate:String(describing: birthdate),gender:gender[genderSelected],type:types[typeSelected],BloodType:bloodGroups[bloodSelected],basal:basalinsulins[basalSelected],bolus:bolusinsulins[bolusSelected],isNew:isnewdiabetic,initialInsulin:insulinsum,dremail:dremail.text!,useremail: user!.email!,timeStamp:String(describing: NSDate().timeIntervalSince1970),lastseen:0,isnewUser:true)
         let PatientRef = self.ref.child((user?.uid)!)
         PatientRef.setValue(thisPatient.toAnyObject())
         let alert = UIAlertController(title: "Vitealth zPortal", message: "Your information has been stored", preferredStyle: UIAlertControllerStyle.alert)
