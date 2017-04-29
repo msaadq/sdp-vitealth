@@ -188,9 +188,9 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
     @IBAction func SavebuttonPressed(_ sender: Any) {
         let user = FIRAuth.auth()?.currentUser;
         var isnewdiabetic:Bool
-        var isf:Int=0
+        
         var insulinsum:Int=0
-        var Rulevar=1800
+        
         if ((user) != nil) {
             print("User is signed in.")
         } else {
@@ -210,7 +210,7 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
         else{
             isnewdiabetic=false
             insulinsum=Int(yestUnits.text!)!
-            isf=Rulevar/insulinsum
+           
         }
         
         let thisPatient = Patient(weight: Int(weight.text!)!,height:Int(height.text!)!,ketone:Int(ketonelevel.text!)!,h1bc:Int(h1bc.text!)!,birthdate:String(describing: birthdate),gender:gender[genderSelected],type:types[typeSelected],BloodType:bloodGroups[bloodSelected],basal:basalinsulins[basalSelected],bolus:bolusinsulins[bolusSelected],isNew:isnewdiabetic,initialInsulin:insulinsum,dremail:dremail.text!,useremail: user!.email!,timeStamp:String(describing: NSDate().timeIntervalSince1970),lastseen:0,isnewUser:true)

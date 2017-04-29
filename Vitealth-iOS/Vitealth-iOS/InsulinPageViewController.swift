@@ -126,7 +126,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                     yesterday_insulin=(userpatient?["initialInsulin"] as? Int)!
                     insulin=self.CalcInsulin(sumofunits: yesterday_insulin)
                     self.ref.child("patient").child(userID!).updateChildValues(["isnewUser": false])
-                    self.ref.child("patient").child(userID!).updateChildValues(["lastseen": nowtime])
+                    self.ref.child("patient").child(userID!).updateChildValues(["lastseen": int_nowtime])
                     print("value set false")
                     let insulindose = Dose(insulinQuant: insulin,mealCarbs:self.MealCarbs,insulinType:bolustype,glucose:self.nowBGL,user: user!.email!,timeStamp:nowtime)
                     
@@ -141,24 +141,29 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                     //if user is not using the portal for the first time, access yesterdays values
                     //get value for lastseen
                     lastchecked=(userpatient?["lastseen"] as? Int)!
+                    print(lastchecked)
                     let offline_time=int_nowtime-lastchecked
-                    var dormantDays:Int=0
+                    print(offline_time)
+                    var dormantDays:Int=1 //by default get the day before
                     if offline_time > 86400  //if user was last seen more than a day ago
                     {
                         
                         if offline_time > 86400 && offline_time < 172800 {
-                            dormantDays=1
+                            dormantDays = 2
                         } else if offline_time > 172800 && offline_time < 259200  {
-                            dormantDays=2
+                            dormantDays=3
                         }
                     }
                    
-                    let intfetchDate=NSDate(timeIntervalSince1970:TimeInterval(int_nowtime-dormantDays*86400))
+                    let intfetchDate=NSDate(timeIntervalSince1970:TimeInterval(int_nowtime-(dormantDays*86400)))
                     let fechDate=dateFormatter.string(from: intfetchDate as Date)
-                    
+                    print("calc isf from ",fechDate)
                     self.ref.child("dose").child(userID!).child(fechDate).observeSingleEvent(of: .value, with: { (snapshot) in
                         if !snapshot.exists() {
                             print("oh snap")
+                            let alert = UIAlertController(title: "Vitealth zPortal", message: "Oh snap, something went wrong", preferredStyle: UIAlertControllerStyle.alert)
+                            alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+                            self.present(alert, animated: true, completion: nil)
                             return }
                         
                         
