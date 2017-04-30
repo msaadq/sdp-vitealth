@@ -10,18 +10,22 @@ import UIKit
 import FirebaseDatabase
 import FirebaseAuth
 class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
-
+    
     
     
     @IBOutlet weak var exercisepicker: UIPickerView!
-  
+    
     @IBOutlet weak var InsulinButton: UIButton!
- 
+    
     var exercise: [String] = [String]()
     var MealCarbs:Int=0
     var targetBGL:Int=100
     var nowBGL:Int=0
     var excSelected: Int=0  //no exercise selected by default
+    var RuleVar:Int = 1700
+    
+    var tField: UITextField!
+    
     let ref = FIRDatabase.database().reference()
     let doseref = FIRDatabase.database().reference(withPath: "dose")
     override func viewDidLoad() {
@@ -34,7 +38,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         // Do any additional setup after loading the view.
         exercise = ["Not exercising","Long duration,Moderate Intensity","Moderate Duration, High Intensity","Moderate Duration, Moderate Intensity","Short Duration,Low Intensity"]
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -58,7 +62,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
             
         }
         
-   }
+    }
     
     
     //font size
@@ -73,10 +77,10 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         return pickerLabel
     }
     
-
     
-
-   
+    
+    
+    
     @IBAction func ButtonPressInsulin(_ sender: Any) {
         var insulin:Int=0
         var yesterday_insulin:Int=0
@@ -95,7 +99,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         let dayDate = dateFormatter.string(from: currentDate as Date)
         print(dayDate)
         
-
+        
         
         
         let user = FIRAuth.auth()?.currentUser;
@@ -115,6 +119,11 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                 let userpatient = snapshot.value as? NSDictionary
                 bolustype = (userpatient?["bolus"] as? String)!
                 print(bolustype)
+                //Apply BD Rule Value for ISF
+                if bolustype=="Regular"
+                {self.RuleVar=1500 }
+                else
+                {self.RuleVar=1700}
                 //is user logged in the first time
                 FirstTimeUser=(userpatient?["isnewUser"] as? Bool)!
                 print(FirstTimeUser)
@@ -128,13 +137,25 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                     self.ref.child("patient").child(userID!).updateChildValues(["isnewUser": false])
                     self.ref.child("patient").child(userID!).updateChildValues(["lastseen": int_nowtime])
                     print("value set false")
-                    let insulindose = Dose(insulinQuant: insulin,mealCarbs:self.MealCarbs,insulinType:bolustype,glucose:self.nowBGL,user: user!.email!,timeStamp:nowtime)
+                    let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
+                    alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+                        print("Handle Ok logic here")
+                        let insulindose = Dose(insulinQuant: insulin,mealCarbs:self.MealCarbs,insulinType:bolustype,glucose:self.nowBGL,user: user!.email!,timeStamp:nowtime)
+                        
+                        print("Object created")
+                        print(insulindose.user)
+                        print((user?.uid)!)
+                        let UserDoseRef = self.doseref.child(userID!).child(dayDate).child(nowtime)
+                        UserDoseRef.setValue(insulindose.toAnyObject())
+                    }))
                     
-                    print("Object created")
-                    print(insulindose.user)
-                    print((user?.uid)!)
-                    let UserDoseRef = self.doseref.child(userID!).child(dayDate).child(nowtime)
-                    UserDoseRef.setValue(insulindose.toAnyObject())
+                    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in
+                        print("Handle Cancel Logic here")
+                        self.AdjustInsulinDose(mealcarbs:self.MealCarbs,bolus:bolustype,BGL:self.nowBGL, email:user!.email!,time:nowtime,day:dayDate,uid:userID!)
+                    }))
+                    
+                    self.present(alert, animated: true, completion: nil)
+                    
                 }
                 else{
                     //86400 seconds in one day
@@ -142,6 +163,8 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                     //get value for lastseen
                     lastchecked=(userpatient?["lastseen"] as? Int)!
                     print(lastchecked)
+                    //update last seen
+                    self.ref.child("patient").child(userID!).updateChildValues(["lastseen": int_nowtime])
                     let offline_time=int_nowtime-lastchecked
                     print(offline_time)
                     var dormantDays:Int=1 //by default get the day before
@@ -154,7 +177,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                             dormantDays=3
                         }
                     }
-                   
+                    
                     let intfetchDate=NSDate(timeIntervalSince1970:TimeInterval(int_nowtime-(dormantDays*86400)))
                     let fechDate=dateFormatter.string(from: intfetchDate as Date)
                     print("calc isf from ",fechDate)
@@ -169,40 +192,51 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                         
                         //if exists
                         print("get all daily doses")
-                      
+                        
                         var dailydoses = [Dose]()
                         for item in snapshot.children {
-                        let dailydose = Dose(snapshot: item as! FIRDataSnapshot)
-                        dailydoses.append(dailydose)
-                        yesterday_insulin=yesterday_insulin+dailydose.insulinQuant
+                            let dailydose = Dose(snapshot: item as! FIRDataSnapshot)
+                            dailydoses.append(dailydose)
+                            yesterday_insulin=yesterday_insulin+dailydose.insulinQuant
                         }
                         
                         
                         
-                        print(yesterday_insulin)
+                        print("yesterday insulin",yesterday_insulin)
                         
                         insulin=self.CalcInsulin(sumofunits:  yesterday_insulin) //for now
-                        print(insulin)
-                        let insulindose = Dose(insulinQuant: insulin,mealCarbs:self.MealCarbs,insulinType:bolustype,glucose:self.nowBGL,user: user!.email!,timeStamp:nowtime)
-                        print("Object created")
-                        print(insulindose.user)
-                        print((user?.uid)!)
-                        let UserDoseRef = self.doseref.child(userID!).child(nowtime)
-                        UserDoseRef.setValue(insulindose.toAnyObject())
+                        print("insulin",insulin)
+                        let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+                            print("Handle Ok logic here")
+                            let insulindose = Dose(insulinQuant: insulin,mealCarbs:self.MealCarbs,insulinType:bolustype,glucose:self.nowBGL,user: user!.email!,timeStamp:nowtime)
+                            
+                            print("Object created")
+                            print(insulindose.user)
+                            print((user?.uid)!)
+                            let UserDoseRef = self.doseref.child(userID!).child(dayDate).child(nowtime)
+                            UserDoseRef.setValue(insulindose.toAnyObject())
+                        }))
+                        
+                        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in
+                            print("Handle Cancel Logic here")
+                            self.AdjustInsulinDose(mealcarbs:self.MealCarbs,bolus:bolustype,BGL:self.nowBGL, email:user!.email!,time:nowtime,day:dayDate,uid:userID!)
+                        }))
+                        
+                        self.present(alert, animated: true, completion: nil)
+                        
                     })
-
-                                    }
-
+                    
+                }
+                
+               
                 
                 
-                let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
-                alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
                 
             }) { (error) in
                 print(error.localizedDescription)
             }
-
+            
         } else {
             print("No user is signed in.")
         }
@@ -210,7 +244,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
     }
     
-  
+    
     
     func CalcCarbInsulinRatio(units: Int) -> Int {
         let PrevCarbIntake=500
@@ -218,7 +252,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     func CalcInsulinSensitivity(units: Int) -> Int {
-        let RuleVar=1800
+        print(RuleVar)
         return RuleVar/units
     }
     
@@ -262,7 +296,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
             } else {
                 exerciseComponent = ExerciseParameters.MedHighBloodSugar.ShortDurLowInt
             }
-
+            
         case 180..<250:
             if excSelected==0 {
                 exerciseComponent = 0
@@ -275,32 +309,67 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
             } else {
                 exerciseComponent = ExerciseParameters.HighBloodSugar.ShortDurLowInt
             }
-        
+            
         default:
             exerciseComponent=0
         }
         return exerciseComponent
     }
- 
-
+    
+    
     func CalcInsulin(sumofunits: Int) -> Int {
         //get yesterdays sum of units
         let ISF=CalcInsulinSensitivity(units: sumofunits)
         print("isf is",ISF)
+        let CarbInsRatio=CalcCarbInsulinRatio(units: sumofunits)
+        print("CarbInsRatio is",CarbInsRatio)
         let InsulinUnits=(MealCarbs/CalcCarbInsulinRatio(units: sumofunits))+((nowBGL-targetBGL)/CalcInsulinSensitivity(units: sumofunits))-CalcExerciseComponent()
-       return InsulinUnits
+        return InsulinUnits
+    }
+    func configurationTextField(textField: UITextField!)
+    {
+        print("generating the TextField")
+        textField.placeholder = "Enter the dose appropriate for you"
+        tField = textField
+    }
+    
+   
+    func AdjustInsulinDose(mealcarbs:Int,bolus:String,BGL:Int, email:String,time:String,day:String,uid:String){
+        
+        print("Method Called")
+        let alert = UIAlertController(title: "Readjust your insulin dose", message: "", preferredStyle: .alert)
+        
+        alert.addTextField(configurationHandler: configurationTextField)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:nil))
+        alert.addAction(UIAlertAction(title: "Done", style: .default, handler:{ (UIAlertAction) in
+            print("Done !!")
+            let insulin=Int(self.tField.text!)
+            let insulindose = Dose(insulinQuant: insulin!,mealCarbs:mealcarbs,insulinType:bolus,glucose:BGL,user: email,timeStamp:time)
+            
+            print("Object created")
+            
+            let UserDoseRef = self.doseref.child(uid).child(day).child(time)
+            UserDoseRef.setValue(insulindose.toAnyObject())
+
+            print("Item : \(String(describing: self.tField.text))")
+        }))
+        self.present(alert, animated: true, completion: {
+            print("completion block")
+        })
+        
+        
     }
     
     
-
+    
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
 }
