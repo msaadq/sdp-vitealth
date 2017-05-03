@@ -84,10 +84,11 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     @IBAction func ButtonPressInsulin(_ sender: Any) {
         var insulin:Int=0
         var yesterday_insulin:Int=0
+        var yesterday_totalcarb:Int=0
         var bolustype:String = "Not known"
         var FirstTimeUser:Bool=true
         var lastchecked:Int=0
-        
+        var recordInsulin:Int=0
         
         let int_nowtime=Int(NSDate().timeIntervalSince1970)
         let nowtime=String(describing:int_nowtime )
@@ -133,7 +134,8 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                 if FirstTimeUser {
                     //if user is using the portal for the first time, access the values from his information
                     yesterday_insulin=(userpatient?["initialInsulin"] as? Int)!
-                    insulin=self.CalcInsulin(sumofunits: yesterday_insulin)
+                    //Apply 500 Rule
+                    insulin=self.CalcInsulin(sumofunits: yesterday_insulin,sumofcarbs:500)
                     self.ref.child("patient").child(userID!).updateChildValues(["isnewUser": false])
                     self.ref.child("patient").child(userID!).updateChildValues(["lastseen": int_nowtime])
                     print("value set false")
@@ -162,70 +164,92 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                     //if user is not using the portal for the first time, access yesterdays values
                     //get value for lastseen
                     lastchecked=(userpatient?["lastseen"] as? Int)!
+                    recordInsulin=(userpatient?["initialInsulin"] as? Int)!  //in case user does not have a yesterday record
                     print(lastchecked)
                     //update last seen
                     self.ref.child("patient").child(userID!).updateChildValues(["lastseen": int_nowtime])
                     let offline_time=int_nowtime-lastchecked
                     print(offline_time)
-                    var dormantDays:Int=1 //by default get the day before
+                    var activeDays:Int=1 //by default get the day before
                     if offline_time > 86400  //if user was last seen more than a day ago
                     {
                         
                         if offline_time > 86400 && offline_time < 172800 {
-                            dormantDays = 2
-                        } else if offline_time > 172800 && offline_time < 259200  {
-                            dormantDays=3
+                            activeDays = 2
+                        
+                        } else if offline_time > 172800   {
+                            activeDays = 0
                         }
                     }
-                    
-                    let intfetchDate=NSDate(timeIntervalSince1970:TimeInterval(int_nowtime-(dormantDays*86400)))
-                    let fechDate=dateFormatter.string(from: intfetchDate as Date)
-                    print("calc isf from ",fechDate)
-                    self.ref.child("dose").child(userID!).child(fechDate).observeSingleEvent(of: .value, with: { (snapshot) in
-                        if !snapshot.exists() {
-                            print("oh snap")
-                            let alert = UIAlertController(title: "Vitealth zPortal", message: "Oh snap, something went wrong", preferredStyle: UIAlertControllerStyle.alert)
-                            alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
-                            self.present(alert, animated: true, completion: nil)
-                            return }
+                    //if user hasnt used app for a long time
+                    if activeDays==0
+                    {
+                        let Enteralert = UIAlertController(title: "Vitealth zPortal", message: "You haven't used the app in a while.We can't tell.", preferredStyle: .alert)
                         
-                        
-                        //if exists
-                        print("get all daily doses")
-                        
-                        var dailydoses = [Dose]()
-                        for item in snapshot.children {
-                            let dailydose = Dose(snapshot: item as! FIRDataSnapshot)
-                            dailydoses.append(dailydose)
-                            yesterday_insulin=yesterday_insulin+dailydose.insulinQuant
-                        }
-                        
-                        
-                        
-                        print("yesterday insulin",yesterday_insulin)
-                        
-                        insulin=self.CalcInsulin(sumofunits:  yesterday_insulin) //for now
-                        print("insulin",insulin)
-                        let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
-                        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
-                            print("Handle Ok logic here")
-                            let insulindose = Dose(insulinQuant: insulin,mealCarbs:self.MealCarbs,insulinType:bolustype,glucose:self.nowBGL,user: user!.email!,timeStamp:nowtime)
+                       Enteralert.addTextField(configurationHandler: self.configurationTextField)
+                        Enteralert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:nil))
+                        Enteralert.addAction(UIAlertAction(title: "Done", style: .default, handler:{ (UIAlertAction) in
+                            print("Done !!")
+                            //use 500 Rule and ask user for his stats
+                            yesterday_insulin=Int(self.tField.text!)!
+                            yesterday_totalcarb=500
+                            print("Item : \(String(describing: self.tField.text))")
+                            insulin=self.CalcInsulin(sumofunits:  yesterday_insulin, sumofcarbs:yesterday_totalcarb) //for now
+                            print("insulin",insulin)
+                            self.ref.child("patient").child(userID!).updateChildValues(["initialInsulin": yesterday_insulin])
+                            self.DisplayInsulin(insulin_q: insulin,meal_carbs:self.MealCarbs,_bolus:bolustype,_BGL:self.nowBGL, _email:user!.email!,_time:nowtime,_day:dayDate,_uid:userID!)
+
                             
-                            print("Object created")
-                            print(insulindose.user)
-                            print((user?.uid)!)
-                            let UserDoseRef = self.doseref.child(userID!).child(dayDate).child(nowtime)
-                            UserDoseRef.setValue(insulindose.toAnyObject())
                         }))
+                        self.present(Enteralert, animated: true, completion: {
+                            print("completion block")
+                        })
+
+                       
+                    }
+                    
+                    
+                    else
+                    {
+                        let intfetchDate=NSDate(timeIntervalSince1970:TimeInterval(int_nowtime-(activeDays*86400)))
+                        let fechDate=dateFormatter.string(from: intfetchDate as Date)
+                        print("calc isf from ",fechDate)
+                        self.ref.child("dose").child(userID!).child(fechDate).observeSingleEvent(of: .value, with: { (snapshot) in
+                            if !snapshot.exists() {
+                                print("The record for yesterday not there")
+                                print(recordInsulin)
+                                insulin=self.CalcInsulin(sumofunits:  recordInsulin, sumofcarbs:500) //for now
+                                print(insulin)
+                                self.DisplayInsulin(insulin_q: insulin,meal_carbs:self.MealCarbs,_bolus:bolustype,_BGL:self.nowBGL, _email:user!.email!,_time:nowtime,_day:dayDate,_uid:userID!)
+                                 }
+                            
+                            
+                            //if exists
+                            else{
+                                print("get all daily doses")
+                                
+                                var dailydoses = [Dose]()
+                                for item in snapshot.children {
+                                    let dailydose = Dose(snapshot: item as! FIRDataSnapshot)
+                                    dailydoses.append(dailydose)
+                                    yesterday_insulin=yesterday_insulin+dailydose.insulinQuant
+                                    yesterday_totalcarb=yesterday_totalcarb+dailydose.mealCarbs
+                                }
+                                
+                                print("yesterday insulin1",yesterday_insulin)
+                                
+                                insulin=self.CalcInsulin(sumofunits:  yesterday_insulin, sumofcarbs:yesterday_totalcarb) //for now
+                                print("insulin",insulin)
+                                self.DisplayInsulin(insulin_q: insulin,meal_carbs:self.MealCarbs,_bolus:bolustype,_BGL:self.nowBGL, _email:user!.email!,_time:nowtime,_day:dayDate,_uid:userID!)
+                            }
+                            })
+                    }
                         
-                        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in
-                            print("Handle Cancel Logic here")
-                            self.AdjustInsulinDose(mealcarbs:self.MealCarbs,bolus:bolustype,BGL:self.nowBGL, email:user!.email!,time:nowtime,day:dayDate,uid:userID!)
-                        }))
+                    
                         
-                        self.present(alert, animated: true, completion: nil)
+                    
                         
-                    })
+                    
                     
                 }
                 
@@ -246,8 +270,8 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     
     
-    func CalcCarbInsulinRatio(units: Int) -> Int {
-        let PrevCarbIntake=500
+    func CalcCarbInsulinRatio(units: Int,PrevCarbIntake:Int) -> Int {
+        
         return PrevCarbIntake/units
     }
     
@@ -317,19 +341,25 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     
-    func CalcInsulin(sumofunits: Int) -> Int {
+    func CalcInsulin(sumofunits: Int, sumofcarbs:Int) -> Int {
         //get yesterdays sum of units
         let ISF=CalcInsulinSensitivity(units: sumofunits)
         print("isf is",ISF)
-        let CarbInsRatio=CalcCarbInsulinRatio(units: sumofunits)
+        let CarbInsRatio=CalcCarbInsulinRatio(units: sumofunits,PrevCarbIntake:sumofcarbs)
         print("CarbInsRatio is",CarbInsRatio)
-        let InsulinUnits=(MealCarbs/CalcCarbInsulinRatio(units: sumofunits))+((nowBGL-targetBGL)/CalcInsulinSensitivity(units: sumofunits))-CalcExerciseComponent()
+        let InsulinUnits=(MealCarbs/CarbInsRatio)+((nowBGL-targetBGL)/ISF)-CalcExerciseComponent()
         return InsulinUnits
+    }
+    func readjustTextField(textField: UITextField!)
+    {
+        print("generating the TextField")
+        textField.placeholder = "Enter the dose appropriate for you"
+        tField = textField
     }
     func configurationTextField(textField: UITextField!)
     {
         print("generating the TextField")
-        textField.placeholder = "Enter the dose appropriate for you"
+        textField.placeholder = "Enter the sum of insulin you used yesterday"
         tField = textField
     }
     
@@ -337,9 +367,9 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     func AdjustInsulinDose(mealcarbs:Int,bolus:String,BGL:Int, email:String,time:String,day:String,uid:String){
         
         print("Method Called")
-        let alert = UIAlertController(title: "Readjust your insulin dose", message: "", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Vitealth zPortal", message: "Readjust your insulin dose", preferredStyle: .alert)
         
-        alert.addTextField(configurationHandler: configurationTextField)
+        alert.addTextField(configurationHandler: readjustTextField)
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:nil))
         alert.addAction(UIAlertAction(title: "Done", style: .default, handler:{ (UIAlertAction) in
             print("Done !!")
@@ -358,6 +388,29 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         })
         
         
+    }
+   
+    func DisplayInsulin(insulin_q:Int,meal_carbs:Int,_bolus:String,_BGL:Int, _email:String,_time:String,_day:String,_uid:String)
+    {
+        print(" insulin calc",insulin_q)
+        
+        let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin_q)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+            print("Handle Ok logic here")
+            let insulindose = Dose(insulinQuant: insulin_q,mealCarbs:meal_carbs,insulinType:_bolus,glucose:_BGL,user: _email,timeStamp:_time)
+            
+            print("Object created")
+            
+            let UserDoseRef = self.doseref.child(_uid).child(_day).child(_time)
+            UserDoseRef.setValue(insulindose.toAnyObject())
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in
+            print("Handle Cancel Logic here")
+            self.AdjustInsulinDose(mealcarbs:meal_carbs,bolus:_bolus,BGL:_BGL, email:_email,time:_time,day:_day,uid:_uid)
+        }))
+        
+        self.present(alert, animated: true, completion: nil)
     }
     
     

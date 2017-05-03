@@ -14,6 +14,7 @@ class MainLoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         connect.layer.borderWidth = 1
+        connect.layer.cornerRadius = 5
         connect.layer.borderColor = UIColor.white.cgColor
         // Do any additional setup after loading the view.
     }
