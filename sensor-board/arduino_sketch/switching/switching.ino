@@ -3,14 +3,14 @@
 // The change is triggered on both the rising and falling edges
 // of the interrupt signal
 
-#define INT_PIN 2
-#define LED1 5 // Port D Pin 5
-#define LED2 4 // Port D Pin 4
-#define LED3 3 // Port D Pin 3
+#define INT_PIN 3
+#define LED1 4 // Port D Pin 4
+#define LED2 5 // Port D Pin 5
+#define LED3 6 // Port D Pin 6
 
 // PORTD :  76543210
-// PORTD &= 11000111
-// PORTD |= 00111000      
+// PORTD &= 10001111
+// PORTD |= 01110000      
 
 
 //see switching_timing.pdf in order to understand the switchingState
@@ -29,7 +29,7 @@ void setup(){
   pinMode(INT_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(INT_PIN), int_routine, CHANGE);
 
-  DDRD = DDRD | B00111000;
+  DDRD = DDRD | B01110000;
   
   Serial.begin(9600);
 
@@ -54,14 +54,14 @@ void int_routine(){
         switchingState++;
         break;
   
-        case 1:
+      case 1:
         // LED1:HIGH, LED2:HIGH, LED3:HIGH
         PORTD &= (0 << LED1) | (0 << LED2) | (0 << LED3);
         PORTD |= (1 << LED1) | (1 << LED2) | (1 << LED3);
         switchingState++;
         break;
   
-        case 2: 
+      case 2: 
         // LED1:HIGH, LED2:LOW, LED3:HIGH
         PORTD &= (0 << LED1) | (0 << LED2) | (0 << LED3);
         PORTD |= (1 << LED1) | (0 << LED2) | (1 << LED3);

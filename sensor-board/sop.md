@@ -1,0 +1,1 @@
++ Connect the gnd pin and the pin 12 connector
