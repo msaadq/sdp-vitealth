@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import Material
 
 class PatientInformationViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
 
@@ -22,7 +23,9 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
     @IBOutlet weak var height: UITextField!
     @IBOutlet weak var bdaypicker: UIDatePicker!
     @IBOutlet weak var h1bc: UITextField!
+    @IBOutlet weak var sugartarget: TextField!
  
+    @IBOutlet weak var age: TextField!
     @IBOutlet weak var ketonelevel: UITextField!
     @IBOutlet weak var drname: UITextField!
     @IBOutlet weak var dremail: UITextField!
@@ -34,6 +37,7 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
     
     @IBOutlet weak var newSwitch: UISwitch!
     
+    @IBOutlet weak var recommendationLabel: UILabel!
     
     @IBOutlet weak var diabetesStack: UIStackView!
     @IBOutlet weak var yestUnits: UITextField!
@@ -96,7 +100,9 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
         basalinsulins=["Lantus", "Utralente"]
         bolusinsulins=["Humalog", "Regular","Novolog","Apidra"]
         
-        bdaypicker.setValue(UIColor.white, forKeyPath: "textColor")
+       
+        //bdaypicker.setValue(UIFont (name: "Helvetica Neue", size: 10), forKeyPath: "font")
+        
        // scrollview = UIScrollView(frame: view.bounds)
     //scrollview.backgroundColor = UIColor.black
         //scrollview.contentSize = CGSize(width:self.view.frame.width, height:self.view.frame.height+100)
@@ -111,11 +117,12 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
 
     @IBAction func SwitchTriggered(_ sender: Any) {
         if newSwitch.isOn {
-            displayname.text="On"
+            recommendationLabel.isHidden=false
+            recommendationLabel.text=" Please consult your physician on a blood glucose target"
             print("on")
             
         } else {
-            displayname.text="Off"
+            recommendationLabel.isHidden=true
             print("off")
         }
     }
@@ -164,7 +171,7 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView
     {
         let pickerLabel = UILabel()
-        pickerLabel.textColor = UIColor.white
+        pickerLabel.textColor = UIColor.black
         
         if pickerView == BloodTypepicker {
             pickerLabel.text = bloodGroups[row]
@@ -179,7 +186,7 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
         }
 
         // pickerLabel.font = UIFont(name: pickerLabel.font.fontName, size: 15)
-        pickerLabel.font = UIFont(name: "Helvetica Neue", size: 10) // In this use your custom font
+        pickerLabel.font = UIFont(name: "Helvetica Neue", size: 15) // In this use your custom font
         pickerLabel.textAlignment = NSTextAlignment.center
         return pickerLabel
     }
@@ -196,9 +203,7 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
         } else {
             print("No user is signed in.")
         }
-        //get birthdate
-        let birthdate = Int((self.bdaypicker?.date.timeIntervalSince1970)!)
-        print(String(describing: birthdate))
+        
         //get isNewdiabetic?
         if newSwitch.isOn
         {
@@ -213,7 +218,7 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
            
         }
         
-        let thisPatient = Patient(weight: Int(weight.text!)!,height:Int(height.text!)!,ketone:Int(ketonelevel.text!)!,h1bc:Int(h1bc.text!)!,birthdate:String(describing: birthdate),gender:gender[genderSelected],type:types[typeSelected],BloodType:bloodGroups[bloodSelected],basal:basalinsulins[basalSelected],bolus:bolusinsulins[bolusSelected],isNew:isnewdiabetic,initialInsulin:insulinsum,dremail:dremail.text!,useremail: user!.email!,timeStamp:String(describing: NSDate().timeIntervalSince1970),lastseen:0,isnewUser:true)
+        let thisPatient = Patient(weight: Int(weight.text!)!,height:Int(height.text!)!,ketone:Int(ketonelevel.text!)!,h1bc:Int(h1bc.text!)!,age:Int(age.text!)!,gender:gender[genderSelected],type:types[typeSelected],BloodType:bloodGroups[bloodSelected],basal:basalinsulins[basalSelected],bolus:bolusinsulins[bolusSelected],isNew:isnewdiabetic,initialInsulin:insulinsum,dremail:dremail.text!,useremail: user!.email!,timeStamp:String(describing: NSDate().timeIntervalSince1970),lastseen:0,isnewUser:true,sugarTarget:Int(sugartarget.text!)!)
         let PatientRef = self.ref.child((user?.uid)!)
         PatientRef.setValue(thisPatient.toAnyObject())
         let alert = UIAlertController(title: "Vitealth zPortal", message: "Your information has been stored", preferredStyle: UIAlertControllerStyle.alert)
@@ -224,6 +229,12 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
     
 
     // MARK: Keyboard
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        for textField in self.view.subviews where textField is UITextField {
+            textField.resignFirstResponder()
+        }
+        return true
+    }
     
     func hideKeyboard() {
         self.view.endEditing(true)

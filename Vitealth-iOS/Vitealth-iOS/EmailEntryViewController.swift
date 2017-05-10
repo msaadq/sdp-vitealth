@@ -8,6 +8,7 @@
 
 import UIKit
 import FirebaseAuth
+import Material
 class EmailEntryViewController: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var emailTextField: UITextField!
@@ -16,11 +17,12 @@ class EmailEntryViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var RegisterButton: UIButton!
     
+    @IBOutlet weak var loginbutton: UIButton!
     var UserInSystem = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        loginbutton.layer.cornerRadius = 5
         // Do any additional setup after loading the view.
         emailTextField.delegate = self
         
@@ -97,7 +99,12 @@ class EmailEntryViewController: UIViewController, UITextFieldDelegate {
 
         }
     }
-    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        for textField in self.view.subviews where textField is UITextField {
+            textField.resignFirstResponder()
+        }
+        return true
+    }
     
     // MARK: Keyboard
     

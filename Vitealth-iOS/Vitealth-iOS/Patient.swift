@@ -12,7 +12,7 @@ class Patient: NSObject {
     var height:Int = 0
     var ketone:Int = 0
     var h1bc:Int = 0
-    var birthdate:String=String(describing: NSDate())
+    var age:Int=0
     var gender:String? = nil
     var type:String? = nil
     var BloodType:String? = nil
@@ -25,15 +25,16 @@ class Patient: NSObject {
     var timeStamp:String? = nil
     var lastseen:Int = 0
     var isnewUser:Bool = true
+    var sugarTarget:Int=0
    
     
     override init(){}
-    init(weight:Int,height:Int,ketone:Int,h1bc:Int,birthdate:String,gender:String,type:String,BloodType:String,basal:String,bolus:String,isNew:Bool,initialInsulin:Int,dremail:String,useremail:String,timeStamp:String,lastseen:Int,isnewUser:Bool){
+    init(weight:Int,height:Int,ketone:Int,h1bc:Int,age:Int,gender:String,type:String,BloodType:String,basal:String,bolus:String,isNew:Bool,initialInsulin:Int,dremail:String,useremail:String,timeStamp:String,lastseen:Int,isnewUser:Bool,sugarTarget:Int){
         self.weight=weight
         self.height=height
         self.ketone=ketone
         self.h1bc=h1bc
-        self.birthdate=birthdate
+        self.age=age
         self.gender=gender
         self.type=type
         self.BloodType=BloodType
@@ -46,6 +47,7 @@ class Patient: NSObject {
         self.timeStamp=timeStamp
         self.lastseen=lastseen
         self.isnewUser=isnewUser
+        self.sugarTarget=sugarTarget
     }
     
     
@@ -55,7 +57,7 @@ class Patient: NSObject {
             "height":height,
             "ketone":ketone,
             "h1bc":h1bc,
-            "birthdate":birthdate,
+            "age":age,
             "gender":gender ?? "",
             "type":type ?? "",
             "BloodType":BloodType ?? "",
@@ -67,7 +69,8 @@ class Patient: NSObject {
             "useremail": useremail ?? "",
             "timeStamp": timeStamp ?? "",
             "lastseen": lastseen,
-            "isnewUser":isnewUser
+            "isnewUser":isnewUser,
+            "sugarTarget":sugarTarget
         ]
     }
 }

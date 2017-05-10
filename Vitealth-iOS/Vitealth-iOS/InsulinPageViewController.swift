@@ -86,9 +86,11 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         var yesterday_insulin:Int=0
         var yesterday_totalcarb:Int=0
         var bolustype:String = "Not known"
+        var basaltype:String = "Not known"
         var FirstTimeUser:Bool=true
         var lastchecked:Int=0
         var recordInsulin:Int=0
+        var residue:Int=0
         
         let int_nowtime=Int(NSDate().timeIntervalSince1970)
         let nowtime=String(describing:int_nowtime )
@@ -99,7 +101,8 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         dateFormatter.locale = NSLocale.current
         let dayDate = dateFormatter.string(from: currentDate as Date)
         print(dayDate)
-        
+        let hour = Calendar.current.component(.hour, from: Date())
+        print(hour)
         
         
         
@@ -109,7 +112,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
             print("User is signed in.")
             
             
-            //get time
+            //get id
             let userID = user?.uid
             
             //get his bolus insulin
@@ -119,6 +122,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                     return }
                 let userpatient = snapshot.value as? NSDictionary
                 bolustype = (userpatient?["bolus"] as? String)!
+                basaltype = (userpatient?["basal"] as? String)!
                 print(bolustype)
                 //Apply BD Rule Value for ISF
                 if bolustype=="Regular"
@@ -135,14 +139,14 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                     //if user is using the portal for the first time, access the values from his information
                     yesterday_insulin=(userpatient?["initialInsulin"] as? Int)!
                     //Apply 500 Rule
-                    insulin=self.CalcInsulin(sumofunits: yesterday_insulin,sumofcarbs:500)
+                    insulin=self.CalcInsulin(sumofunits: yesterday_insulin,sumofcarbs:500,residualeffect:0)
                     self.ref.child("patient").child(userID!).updateChildValues(["isnewUser": false])
                     self.ref.child("patient").child(userID!).updateChildValues(["lastseen": int_nowtime])
                     print("value set false")
                     let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
                     alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
                         print("Handle Ok logic here")
-                        let insulindose = Dose(insulinQuant: insulin,mealCarbs:self.MealCarbs,insulinType:bolustype,glucose:self.nowBGL,user: user!.email!,timeStamp:nowtime)
+                        let insulindose = Dose(insulinQuant: insulin,mealCarbs:self.MealCarbs,insulinType:bolustype,glucose:self.nowBGL,user: user!.email!,timeStamp:nowtime,timeofday:hour, basal:false)
                         
                         print("Object created")
                         print(insulindose.user)
@@ -153,7 +157,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                     
                     alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in
                         print("Handle Cancel Logic here")
-                        self.AdjustInsulinDose(mealcarbs:self.MealCarbs,bolus:bolustype,BGL:self.nowBGL, email:user!.email!,time:nowtime,day:dayDate,uid:userID!)
+                        self.AdjustInsulinDose(mealcarbs:self.MealCarbs,bolus:bolustype,BGL:self.nowBGL, email:user!.email!,time:nowtime,day:dayDate,uid:userID!,hourday: hour)
                     }))
                     
                     self.present(alert, animated: true, completion: nil)
@@ -176,17 +180,19 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                         
                         if offline_time > 86400 && offline_time < 172800 {
                             activeDays = 2
-                        
+                            
                         } else if offline_time > 172800   {
                             activeDays = 0
                         }
                     }
+                    
+                    print("active days",activeDays)
                     //if user hasnt used app for a long time
                     if activeDays==0
                     {
                         let Enteralert = UIAlertController(title: "Vitealth zPortal", message: "You haven't used the app in a while.We can't tell.", preferredStyle: .alert)
                         
-                       Enteralert.addTextField(configurationHandler: self.configurationTextField)
+                        Enteralert.addTextField(configurationHandler: self.configurationTextField)
                         Enteralert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:nil))
                         Enteralert.addAction(UIAlertAction(title: "Done", style: .default, handler:{ (UIAlertAction) in
                             print("Done !!")
@@ -194,21 +200,21 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                             yesterday_insulin=Int(self.tField.text!)!
                             yesterday_totalcarb=500
                             print("Item : \(String(describing: self.tField.text))")
-                            insulin=self.CalcInsulin(sumofunits:  yesterday_insulin, sumofcarbs:yesterday_totalcarb) //for now
+                            insulin=self.CalcInsulin(sumofunits:  yesterday_insulin, sumofcarbs:yesterday_totalcarb,residualeffect: 0) //for now
                             print("insulin",insulin)
                             self.ref.child("patient").child(userID!).updateChildValues(["initialInsulin": yesterday_insulin])
-                            self.DisplayInsulin(insulin_q: insulin,meal_carbs:self.MealCarbs,_bolus:bolustype,_BGL:self.nowBGL, _email:user!.email!,_time:nowtime,_day:dayDate,_uid:userID!)
-
+                            self.DisplayInsulin(insulin_q: insulin,meal_carbs:self.MealCarbs,_bolus:bolustype,_BGL:self.nowBGL, _email:user!.email!,_time:nowtime,_day:dayDate,_uid:userID!,hourofday:hour)
+                            
                             
                         }))
                         self.present(Enteralert, animated: true, completion: {
                             print("completion block")
                         })
-
-                       
+                        
+                        
                     }
-                    
-                    
+                        
+                        
                     else
                     {
                         let intfetchDate=NSDate(timeIntervalSince1970:TimeInterval(int_nowtime-(activeDays*86400)))
@@ -216,44 +222,77 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                         print("calc isf from ",fechDate)
                         self.ref.child("dose").child(userID!).child(fechDate).observeSingleEvent(of: .value, with: { (snapshot) in
                             if !snapshot.exists() {
-                                print("The record for yesterday not there")
+                                print("The record for the day not there")
                                 print(recordInsulin)
-                                insulin=self.CalcInsulin(sumofunits:  recordInsulin, sumofcarbs:500) //for now
+                                insulin=self.CalcInsulin(sumofunits:  recordInsulin, sumofcarbs:500,residualeffect: 0) //for now
                                 print(insulin)
-                                self.DisplayInsulin(insulin_q: insulin,meal_carbs:self.MealCarbs,_bolus:bolustype,_BGL:self.nowBGL, _email:user!.email!,_time:nowtime,_day:dayDate,_uid:userID!)
-                                 }
-                            
-                            
-                            //if exists
+                                self.DisplayInsulin(insulin_q: insulin,meal_carbs:self.MealCarbs,_bolus:bolustype,_BGL:self.nowBGL, _email:user!.email!,_time:nowtime,_day:dayDate,_uid:userID!,hourofday:hour)
+                            }
+                                
+                                
+                                //if exists
                             else{
                                 print("get all daily doses")
                                 
                                 var dailydoses = [Dose]()
+                                
                                 for item in snapshot.children {
                                     let dailydose = Dose(snapshot: item as! FIRDataSnapshot)
                                     dailydoses.append(dailydose)
-                                    yesterday_insulin=yesterday_insulin+dailydose.insulinQuant
-                                    yesterday_totalcarb=yesterday_totalcarb+dailydose.mealCarbs
+                                    if !dailydose.basal
+                                    {   yesterday_insulin=yesterday_insulin+dailydose.insulinQuant
+                                        yesterday_totalcarb=yesterday_totalcarb+dailydose.mealCarbs
+                                    }
+                                    
                                 }
                                 
                                 print("yesterday insulin1",yesterday_insulin)
+                                if yesterday_totalcarb == 0 //if user didnot take carbs the whole day yesterday, use 500 Rule
+                                {yesterday_totalcarb=500}
+                                //check for residual insulin
                                 
-                                insulin=self.CalcInsulin(sumofunits:  yesterday_insulin, sumofcarbs:yesterday_totalcarb) //for now
-                                print("insulin",insulin)
-                                self.DisplayInsulin(insulin_q: insulin,meal_carbs:self.MealCarbs,_bolus:bolustype,_BGL:self.nowBGL, _email:user!.email!,_time:nowtime,_day:dayDate,_uid:userID!)
+                                self.ref.child("dose").child(userID!).child(dayDate).observeSingleEvent(of: .value, with: { (snapshot) in
+                                    if !snapshot.exists() {  //no record of doses from today
+                                        residue=0
+                                    }
+                                    else{
+                                        var todaybasaldoses = [Dose]()
+                                        for item in snapshot.children {
+                                            let todaydose = Dose(snapshot: item as! FIRDataSnapshot)
+                                            if todaydose.basal  //separate basal doses taken today
+                                            {
+                                                todaybasaldoses.append(todaydose)
+                                                
+                                            }
+                                            
+                                        }
+                                        let lastbasaldose=todaybasaldoses.last  //last basal dose
+                                        let elapsedhours=(int_nowtime-Int((lastbasaldose?.timeStamp)!)!)/3600
+                                        print(elapsedhours)
+                                        residue = self.CalcResidueInsulin(time:elapsedhours,quantity:(lastbasaldose?.insulinQuant)!,type:(lastbasaldose?.insulinType)!)
+                                        print("Residual effect", residue)
+                                    }
+                                    
+                                    
+                                    
+                                    insulin=self.CalcInsulin(sumofunits:  yesterday_insulin, sumofcarbs:yesterday_totalcarb,residualeffect:residue) //for now
+                                    print("insulin",insulin)
+                                    
+                                    self.DisplayInsulin(insulin_q: insulin,meal_carbs:self.MealCarbs,_bolus:bolustype,_BGL:self.nowBGL, _email:user!.email!,_time:nowtime,_day:dayDate,_uid:userID!,hourofday:hour)
+                                })
                             }
-                            })
+                        })
                     }
-                        
                     
-                        
                     
-                        
+                    
+                    
+                    
                     
                     
                 }
                 
-               
+                
                 
                 
                 
@@ -279,6 +318,36 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         print(RuleVar)
         return RuleVar/units
     }
+    func CalcResidualComponent(typeInsulin:String) -> Int {
+        let activity_duration:Int
+        switch typeInsulin {
+        case "Lantus":
+            let activity_lower=Insulin.LongAction.Lantus.onsetmin+Insulin.LongAction.Lantus.activationtime
+            let activity_higher=Insulin.LongAction.Lantus.onsetmax+Insulin.LongAction.Lantus.activationtime
+            activity_duration=activity_higher-activity_lower
+        case "Ultralente":
+            let activity_lower=Insulin.LongAction.Ultralente.onsetmin+Insulin.LongAction.Ultralente.activationtimemin
+            let activity_higher=Insulin.LongAction.Ultralente.onsetmax+Insulin.LongAction.Ultralente.activationtimemax
+            activity_duration=activity_higher-activity_lower
+        default:
+            activity_duration=0
+            
+        }
+        return activity_duration
+    }
+    func CalcResidueInsulin(time:Int, quantity:Int,type:String)-> Int{
+        let peakactivity = CalcResidualComponent(typeInsulin: type)
+        var residue:Int
+        if time>peakactivity
+        {
+            residue=0
+        }
+        else{
+            residue = (1-(time/peakactivity))*quantity
+        }
+        return residue
+    }
+    
     
     func CalcExerciseComponent() -> Int {
         let exerciseComponent:Int
@@ -341,13 +410,13 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     
-    func CalcInsulin(sumofunits: Int, sumofcarbs:Int) -> Int {
+    func CalcInsulin(sumofunits: Int, sumofcarbs:Int, residualeffect:Int) -> Int {
         //get yesterdays sum of units
         let ISF=CalcInsulinSensitivity(units: sumofunits)
         print("isf is",ISF)
         let CarbInsRatio=CalcCarbInsulinRatio(units: sumofunits,PrevCarbIntake:sumofcarbs)
         print("CarbInsRatio is",CarbInsRatio)
-        let InsulinUnits=(MealCarbs/CarbInsRatio)+((nowBGL-targetBGL)/ISF)-CalcExerciseComponent()
+        let InsulinUnits=(MealCarbs/CarbInsRatio)+((nowBGL-targetBGL)/ISF)-CalcExerciseComponent()-residualeffect
         return InsulinUnits
     }
     func readjustTextField(textField: UITextField!)
@@ -363,8 +432,8 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         tField = textField
     }
     
-   
-    func AdjustInsulinDose(mealcarbs:Int,bolus:String,BGL:Int, email:String,time:String,day:String,uid:String){
+    
+    func AdjustInsulinDose(mealcarbs:Int,bolus:String,BGL:Int, email:String,time:String,day:String,uid:String,hourday:Int){
         
         print("Method Called")
         let alert = UIAlertController(title: "Vitealth zPortal", message: "Readjust your insulin dose", preferredStyle: .alert)
@@ -374,13 +443,13 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         alert.addAction(UIAlertAction(title: "Done", style: .default, handler:{ (UIAlertAction) in
             print("Done !!")
             let insulin=Int(self.tField.text!)
-            let insulindose = Dose(insulinQuant: insulin!,mealCarbs:mealcarbs,insulinType:bolus,glucose:BGL,user: email,timeStamp:time)
+            let insulindose = Dose(insulinQuant: insulin!,mealCarbs:mealcarbs,insulinType:bolus,glucose:BGL,user: email,timeStamp:time,timeofday:hourday,basal:false)
             
             print("Object created")
             
             let UserDoseRef = self.doseref.child(uid).child(day).child(time)
             UserDoseRef.setValue(insulindose.toAnyObject())
-
+            
             print("Item : \(String(describing: self.tField.text))")
         }))
         self.present(alert, animated: true, completion: {
@@ -389,15 +458,15 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         
     }
-   
-    func DisplayInsulin(insulin_q:Int,meal_carbs:Int,_bolus:String,_BGL:Int, _email:String,_time:String,_day:String,_uid:String)
+    
+    func DisplayInsulin(insulin_q:Int,meal_carbs:Int,_bolus:String,_BGL:Int, _email:String,_time:String,_day:String,_uid:String,hourofday:Int)
     {
         print(" insulin calc",insulin_q)
         
         let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin_q)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
         alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
             print("Handle Ok logic here")
-            let insulindose = Dose(insulinQuant: insulin_q,mealCarbs:meal_carbs,insulinType:_bolus,glucose:_BGL,user: _email,timeStamp:_time)
+            let insulindose = Dose(insulinQuant: insulin_q,mealCarbs:meal_carbs,insulinType:_bolus,glucose:_BGL,user: _email,timeStamp:_time,timeofday:hourofday,basal:false)
             
             print("Object created")
             
@@ -407,7 +476,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in
             print("Handle Cancel Logic here")
-            self.AdjustInsulinDose(mealcarbs:meal_carbs,bolus:_bolus,BGL:_BGL, email:_email,time:_time,day:_day,uid:_uid)
+            self.AdjustInsulinDose(mealcarbs:meal_carbs,bolus:_bolus,BGL:_BGL, email:_email,time:_time,day:_day,uid:_uid,hourday:hourofday)
         }))
         
         self.present(alert, animated: true, completion: nil)

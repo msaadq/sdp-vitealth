@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  InsulinType.swift
 //  Vitealth-iOS
 //
 //  Created by Javeria Afzal on 4/12/17.
@@ -11,30 +11,38 @@ struct Insulin {
     
     
     struct RapidAction{
-        static let onset = 15.0
-        static let peakaction = 30.0...90.0
-        static let activationtime = 180.0...300.0
+        static let onset = 15
+        static let peakactionmin = 30
+        static let peakactionmax = 90
+        static let activationtimemin = 180
+        static let activationtimemax = 300
         
         
     }
     
     struct Regular{
-        static let onset = 30.0
-        static let peakaction = 120.0...240.0
-        static let activationtime = 360.0...480.0
+        static let onset = 30
+        static let peakactionmin = 120
+        static let peakactionmax = 240
+        static let activationtimemin = 360
+        static let activationtimemax = 480
         
         
     }
    
     struct LongAction{
         struct Ultralente{
-            static let onset = 240.0...480.0
-            static let peakaction = 720.0...1080.0
-            static let activationtime = 1440.0...1680.0
+            static let onsetmin = 240
+            static let onsetmax = 480
+            static let peakactionmin = 720
+            static let peakactionmax = 1080
+            static let activationtimemin = 1440
+            static let activationtimemax = 1680
             
         }
         struct Lantus{
-            static let onset = 120.0...240.0
+            static let onsetmin = 120
+            static let onsetmax = 240
             static let peakaction = 0
             static let activationtime = 1440
             
@@ -42,9 +50,13 @@ struct Insulin {
         
     }
     struct InterAction{
-        static let onset = 60.0...180.0
-        static let peakaction = 360.0...720.0
-        static let activationtime = 1080.0...1440.0
+        
+        static let onsetmin = 60
+        static let onsetmax = 180
+        static let peakactionmin = 360
+        static let peakactionmax = 720
+        static let activationtimemin = 1080
+        static let activationtimemax = 1440
         
         
     }

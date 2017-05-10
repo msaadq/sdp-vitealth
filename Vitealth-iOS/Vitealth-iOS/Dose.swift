@@ -15,15 +15,19 @@ class Dose: NSObject {
     var glucose:Int = 0
     var user="None"
     var timeStamp:String=String(describing: NSDate())
+    var timeofday:Int=0
+    var basal:Bool=false
     
     override init(){}
-    init(insulinQuant:Int,mealCarbs:Int,insulinType:String,glucose:Int,user:String,timeStamp:String){
+    init(insulinQuant:Int,mealCarbs:Int,insulinType:String,glucose:Int,user:String,timeStamp:String,timeofday:Int,basal:Bool){
         self.insulinQuant=insulinQuant
         self.mealCarbs=mealCarbs
         self.insulinType = insulinType
         self.glucose = glucose
         self.user=user
         self.timeStamp=timeStamp
+        self.timeofday=timeofday
+        self.basal=basal
     }
     init(snapshot: FIRDataSnapshot) {
         let snapshotValue = snapshot.value as! NSDictionary
@@ -33,6 +37,8 @@ class Dose: NSObject {
         self.glucose=snapshotValue["glucose"] as! Int
         self.user=snapshotValue["user"] as! String
         self.timeStamp=snapshotValue["timeStamp"] as! String
+        self.timeofday=snapshotValue["timeofday"] as! Int
+        self.basal=snapshotValue["basal"] as! Bool
 
             }
     
@@ -44,7 +50,9 @@ class Dose: NSObject {
             "insulinType": insulinType,
             "glucose": glucose,
             "user": user,
-            "timeStamp": timeStamp
+            "timeStamp": timeStamp,
+            "timeofday":timeofday,
+            "basal":basal
         ]
     }
 }

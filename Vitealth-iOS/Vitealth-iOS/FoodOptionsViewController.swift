@@ -125,7 +125,12 @@ class FoodOptionsViewController: UIViewController , SendMealBackProtocol{
     }
     
     
-    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        for textField in self.view.subviews where textField is UITextField {
+            textField.resignFirstResponder()
+        }
+        return true
+    }
     
     // MARK: Keyboard
     

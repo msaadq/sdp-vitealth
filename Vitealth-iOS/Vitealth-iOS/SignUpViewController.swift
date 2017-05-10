@@ -17,11 +17,13 @@ class SignUpViewController: UIViewController {
     @IBOutlet weak var email: UITextField!
     @IBOutlet weak var password: UITextField!
     
+    @IBOutlet weak var signUpButton: UIButton!
     
     var UserName:String="Display Name"
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        signUpButton.layer.cornerRadius = 5
         // Do any additional setup after loading the view.
         
         // Notifications
@@ -32,6 +34,7 @@ class SignUpViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(SignUpViewController.hideKeyboard))
         tapGesture.cancelsTouchesInView = true
         self.view.addGestureRecognizer(tapGesture)
+        
     }
 
 
@@ -109,9 +112,16 @@ class SignUpViewController: UIViewController {
     
     
     // MARK: Keyboard
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        for textField in self.view.subviews where textField is UITextField {
+            textField.resignFirstResponder()
+        }
+        return true
+    }
     
     func hideKeyboard() {
         self.view.endEditing(true)
+        
     }
     
     func keyboardWillShow(notification: NSNotification) {
