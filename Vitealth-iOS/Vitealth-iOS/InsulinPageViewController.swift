@@ -1,4 +1,4 @@
-//
+  //
 //  InsulinPageViewController.swift
 //  Vitealth-iOS
 //
@@ -123,6 +123,11 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                 let userpatient = snapshot.value as? NSDictionary
                 bolustype = (userpatient?["bolus"] as? String)!
                 basaltype = (userpatient?["basal"] as? String)!
+                yesterday_insulin=(userpatient?["initialInsulin"] as? Int)!
+                //get value for lastseen
+                lastchecked=(userpatient?["lastseen"] as? Int)!
+                recordInsulin=(userpatient?["initialInsulin"] as? Int)!  //in case user does not  have a yesterday record
+                FirstTimeUser=(userpatient?["isnewUser"] as? Bool)!
                 print(bolustype)
                 //Apply BD Rule Value for ISF
                 if bolustype=="Regular"
@@ -130,14 +135,14 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                 else
                 {self.RuleVar=1700}
                 //is user logged in the first time
-                FirstTimeUser=(userpatient?["isnewUser"] as? Bool)!
+                
                 print(FirstTimeUser)
                 
                 
                 
                 if FirstTimeUser {
                     //if user is using the portal for the first time, access the values from his information
-                    yesterday_insulin=(userpatient?["initialInsulin"] as? Int)!
+                    
                     //Apply 500 Rule
                     insulin=self.CalcInsulin(sumofunits: yesterday_insulin,sumofcarbs:500,residualeffect:0)
                     self.ref.child("patient").child(userID!).updateChildValues(["isnewUser": false])
@@ -166,9 +171,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                 else{
                     //86400 seconds in one day
                     //if user is not using the portal for the first time, access yesterdays values
-                    //get value for lastseen
-                    lastchecked=(userpatient?["lastseen"] as? Int)!
-                    recordInsulin=(userpatient?["initialInsulin"] as? Int)!  //in case user does not have a yesterday record
+                   
                     print(lastchecked)
                     //update last seen
                     self.ref.child("patient").child(userID!).updateChildValues(["lastseen": int_nowtime])

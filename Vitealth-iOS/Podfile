@@ -6,6 +6,8 @@ target 'Vitealth-iOS' do
   pod 'Firebase'
   pod 'Firebase/Auth'
   pod 'Firebase/Database'
+  pod 'Firebase/Core'
+  pod 'Firebase/Storage'
   pod 'Material', '~> 2.0'
   # Pods for Vitealth-iOS
 

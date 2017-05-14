@@ -11,6 +11,7 @@ import Material
 import Firebase
 
 class DashboardViewController: UIViewController {
+    var patient=Patient()
 
     @IBOutlet weak var mainLabel: UILabel!
     
@@ -33,11 +34,27 @@ class DashboardViewController: UIViewController {
     let ref = FIRDatabase.database().reference()
     let doseref = FIRDatabase.database().reference(withPath: "dose")
     var tField: UITextField!
-
+    
+    var activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        LoadLabels()
+        
+    }
+    
+    
     override func viewDidLoad() {
         print("view load entered")
         super.viewDidLoad()
-        LoadLabels()
+        //activityIndicator.hidesWhenStopped = true;
+       // activityIndicator.activityIndicatorViewStyle  = UIActivityIndicatorViewStyle.gray;
+       // activityIndicator.center = view.center;
+       // LoadLabels()
+       
+
+        
         
         
         
@@ -133,7 +150,6 @@ class DashboardViewController: UIViewController {
     {
         var FirstTimeUser:Bool=true
         var lastchecked:Int=0
-        
         var BGLs=[Int]()
         
         let int_nowtime=Int(NSDate().timeIntervalSince1970)
@@ -160,8 +176,14 @@ class DashboardViewController: UIViewController {
                     print("oh snap")
                     return }
                 let userpatient = snapshot.value as? NSDictionary
-                //is user logged in the first time
+                
                 FirstTimeUser=(userpatient?["isnewUser"] as? Bool)!
+
+             
+                
+                
+                
+                //is user logged in the first time
                 print(FirstTimeUser)
                 if FirstTimeUser {
                     self.mainLabel.text="Welcome to Vitealth zPortal,a fitbit for Diabetes. Proceed to Glucometer if you want to check your Sugar Level"
@@ -189,10 +211,10 @@ class DashboardViewController: UIViewController {
                     if activeDays != 0
                     {
                         var breakfast_units:Int=0
-                        var lunch_units:Int=0
-                        var dinner_units:Int=0
-                        var nonmeal_units:Int=0
-                        var averageBGL:Int=0
+                        var lunch_units:Int = 0
+                        var dinner_units:Int = 0
+                        var nonmeal_units:Int = 0
+                        var averageBGL:Int = -1
                         let intfetchDate=NSDate(timeIntervalSince1970:TimeInterval(int_nowtime-(activeDays*86400)))  //replace 3 with active days
                        
                         let fechDate=dateFormatter.string(from: intfetchDate as Date)
@@ -253,7 +275,7 @@ class DashboardViewController: UIViewController {
                            
                             
 
-                            if averageBGL==0{
+                            if averageBGL == -1{
                                 self.mainLabel.text=" Couldn't fetch details."
                             }
                             else if averageBGL<90 {
@@ -286,14 +308,10 @@ class DashboardViewController: UIViewController {
         }
 
     }
-    /*
+    
     // MARK: - Navigation
+    
+   
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+ 
 }

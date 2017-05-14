@@ -8,15 +8,18 @@
 
 import UIKit
 import Firebase
+import FirebaseStorage
+import FirebaseAuth
 import Material
 
-class PatientInformationViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
+class PatientInformationViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate , UINavigationControllerDelegate{
 
     @IBOutlet weak var Typepicker: UIPickerView!
     @IBOutlet weak var Genderpicker: UIPickerView!
     @IBOutlet weak var BloodTypepicker: UIPickerView!
     @IBOutlet weak var displayname: UILabel!
     
+    @IBOutlet weak var pictureView: UIImageView!
     @IBOutlet weak var boluspicker: UIPickerView!
     @IBOutlet weak var basalpicker: UIPickerView!
     @IBOutlet weak var weight: UITextField!
@@ -41,6 +44,9 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
     
     @IBOutlet weak var diabetesStack: UIStackView!
     @IBOutlet weak var yestUnits: UITextField!
+    @IBOutlet weak var pictureBuuton: UIButton!
+    
+    var imagepicker=UIImagePickerController()
     
     var name="Display Name"
     var bloodGroups: [String] = [String]()
@@ -60,12 +66,15 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
     @IBOutlet weak var cancelbutton: UIButton!
     
     let ref = FIRDatabase.database().reference(withPath: "patient")
+    let storageRef = FIRStorage.storage().reference()
+    let user = FIRAuth.auth()?.currentUser;
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
         // Notifications
         NotificationCenter.default.addObserver(self, selector: #selector(SignUpViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(SignUpViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
@@ -75,9 +84,18 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
         tapGesture.cancelsTouchesInView = true
         self.view.addGestureRecognizer(tapGesture)
         
-        //toggle activation
-        //newSwitch.addTarget(self, action: Selector(("switchIsChanged:")), for: UIControlEvents.valueChanged)
-        print("Entered")
+        
+        
+        //enable profile picture
+        imagepicker.delegate=self
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
+        pictureView.isUserInteractionEnabled = true
+        pictureView.addGestureRecognizer(tapGestureRecognizer)
+        pictureView.layer.borderWidth = 1
+        pictureView.layer.masksToBounds = false
+        //pictureView.layer.borderColor = UIColor.black
+        pictureView.layer.cornerRadius = pictureView.frame.height/2
+        pictureView.clipsToBounds = true
         
         
         displayname.text=name
@@ -101,12 +119,7 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
         bolusinsulins=["Humalog", "Regular","Novolog","Apidra"]
         
        
-        //bdaypicker.setValue(UIFont (name: "Helvetica Neue", size: 10), forKeyPath: "font")
-        
-       // scrollview = UIScrollView(frame: view.bounds)
-    //scrollview.backgroundColor = UIColor.black
-        //scrollview.contentSize = CGSize(width:self.view.frame.width, height:self.view.frame.height+100)
-       // scrollview.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight
+       
     }
 
     override func didReceiveMemoryWarning() {
@@ -193,10 +206,10 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
 
     
     @IBAction func SavebuttonPressed(_ sender: Any) {
-        let user = FIRAuth.auth()?.currentUser;
+       
         var isnewdiabetic:Bool
         
-        var insulinsum:Int=0
+        
         
         if ((user) != nil) {
             print("User is signed in.")
@@ -214,20 +227,115 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
         }
         else{
             isnewdiabetic=false
-            insulinsum=Int(yestUnits.text!)!
+            
            
         }
-        
-        let thisPatient = Patient(weight: Int(weight.text!)!,height:Int(height.text!)!,ketone:Int(ketonelevel.text!)!,h1bc:Int(h1bc.text!)!,age:Int(age.text!)!,gender:gender[genderSelected],type:types[typeSelected],BloodType:bloodGroups[bloodSelected],basal:basalinsulins[basalSelected],bolus:bolusinsulins[bolusSelected],isNew:isnewdiabetic,initialInsulin:insulinsum,dremail:dremail.text!,useremail: user!.email!,timeStamp:String(describing: NSDate().timeIntervalSince1970),lastseen:0,isnewUser:true,sugarTarget:Int(sugartarget.text!)!)
+        print("about to save")
+        let thisPatient = Patient(name:name,weight: Int(weight.text!)!,height:Int(height.text!)!,ketone:Int(ketonelevel.text!)!,h1bc:Int(h1bc.text!)!,age:Int(age.text!)!,gender:gender[genderSelected],type:types[typeSelected],BloodType:bloodGroups[bloodSelected],basal:basalinsulins[basalSelected],bolus:bolusinsulins[bolusSelected],isNew:isnewdiabetic,initialInsulin:Int(yestUnits.text!)!,dremail:dremail.text!,useremail: user!.email!,timeStamp:String(describing: NSDate().timeIntervalSince1970),lastseen:0,isnewUser:true,sugarTarget:Int(sugartarget.text!)!,drname:drname.text!,drphone:Int(drphone.text!)!,drdesig:designation.text!, drlicense:license.text!)
         let PatientRef = self.ref.child((user?.uid)!)
         PatientRef.setValue(thisPatient.toAnyObject())
         let alert = UIAlertController(title: "Vitealth zPortal", message: "Your information has been stored", preferredStyle: UIAlertControllerStyle.alert)
         alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
         self.present(alert, animated: true, completion: nil)
+        print("saved")
+        
+        
         
     }
     
+    @IBAction func pickPhoto(_ sender: Any) {
+        
+        if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.savedPhotosAlbum){
+            imagepicker.sourceType = UIImagePickerControllerSourceType.savedPhotosAlbum;
+            imagepicker.allowsEditing = true
+            self.present(imagepicker, animated: true, completion: nil)
+            
+            print("Presented images")
+        }
+    }
+    
+    
+    
 
+        
+   
+ 
+
+ 
+    
+    
+
+    //MARK: ImageButton
+    func imageTapped(tapGestureRecognizer: UITapGestureRecognizer)
+    {
+        //let tappedImage = tapGestureRecognizer.view as! UIImageView
+        let alert = UIAlertController(title: "Vitealth zPortal", message: nil, preferredStyle: UIAlertControllerStyle.alert)
+        
+        
+        alert.addAction(UIAlertAction(title: "Open Photos", style: .default, handler: { (action: UIAlertAction!) in
+            print("Handle Library Logic here")
+            if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.savedPhotosAlbum){
+                self.imagepicker.sourceType = UIImagePickerControllerSourceType.savedPhotosAlbum;
+                self.imagepicker.allowsEditing = true
+                self.present(self.imagepicker, animated: true, completion: nil)
+                
+                print("Presented images")
+            }
+            
+        }))
+        alert.addAction(UIAlertAction(title: "Open Camera", style: .default, handler: { (action: UIAlertAction!) in
+            print("Handle Camera logic here")
+            if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.camera){
+                self.imagepicker.sourceType = UIImagePickerControllerSourceType.camera;
+                self.imagepicker.allowsEditing = true
+                self.present(self.imagepicker, animated: true, completion: nil)
+                
+                print("Presented images")
+            }
+        }))
+        
+        self.present(alert, animated: true, completion: nil)
+        
+        
+        
+        
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        print("here")
+        if let imageselected = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            pictureView.image=imageselected
+            print("image success")
+            var data = NSData()  //get data
+            data = UIImageJPEGRepresentation(pictureView.image!, 0.8)! as NSData
+            // set upload path
+            let filePath = "\(user!.uid)/\("userPhoto")"
+            let metaData = FIRStorageMetadata()
+            metaData.contentType = "image/jpg"
+            // When the image has successfully uploaded, we get it's download URL
+            self.storageRef.child(filePath).put(data as Data, metadata: metaData){(metaData,error) in
+                if let error = error {
+                    print(error.localizedDescription)
+                    return
+                }else{
+                    //store downloadURL
+                    let downloadURL = metaData!.downloadURL()!.absoluteString
+                    print(downloadURL)
+                    //store downloadURL at database
+                    // Write the download URL to the Realtime Database
+                   // let dbRef = database.reference().child("myFiles/myFile")
+                   // dbRef.setValue(downloadURL)
+                    //self.databaseRef.child("users").child(user!.uid).updateChildValues(["userPhoto": downloadURL])
+                }
+                
+            }
+        } else{
+            print("Something went wrong")
+        }
+        
+        self.dismiss(animated: true, completion: nil)
+        
+    }
     // MARK: Keyboard
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         for textField in self.view.subviews where textField is UITextField {

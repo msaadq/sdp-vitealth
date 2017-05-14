@@ -8,6 +8,7 @@
 
 import Foundation
 class Patient: NSObject {
+    var name:String? = nil
     var weight:Int = 0
     var height:Int = 0
     var ketone:Int = 0
@@ -26,10 +27,15 @@ class Patient: NSObject {
     var lastseen:Int = 0
     var isnewUser:Bool = true
     var sugarTarget:Int=0
+    var drname:String?=nil
+    var drphone:Int=0
+    var drdesig:String?=nil
+    var drlicense:String?=nil
    
     
     override init(){}
-    init(weight:Int,height:Int,ketone:Int,h1bc:Int,age:Int,gender:String,type:String,BloodType:String,basal:String,bolus:String,isNew:Bool,initialInsulin:Int,dremail:String,useremail:String,timeStamp:String,lastseen:Int,isnewUser:Bool,sugarTarget:Int){
+    init(name:String,weight:Int,height:Int,ketone:Int,h1bc:Int,age:Int,gender:String,type:String,BloodType:String,basal:String,bolus:String,isNew:Bool,initialInsulin:Int,dremail:String,useremail:String,timeStamp:String,lastseen:Int,isnewUser:Bool,sugarTarget:Int,drname:String,drphone:Int,drdesig:String,drlicense:String){
+        self.name=name
         self.weight=weight
         self.height=height
         self.ketone=ketone
@@ -48,11 +54,16 @@ class Patient: NSObject {
         self.lastseen=lastseen
         self.isnewUser=isnewUser
         self.sugarTarget=sugarTarget
+        self.drname=drname
+        self.drphone=drphone
+        self.drdesig=drdesig
+        self.drlicense=drlicense
     }
     
     
     func toAnyObject() -> Any {
         return [
+            "name":name ?? "" ,
             "weight":weight,
             "height":height,
             "ketone":ketone,
@@ -70,7 +81,12 @@ class Patient: NSObject {
             "timeStamp": timeStamp ?? "",
             "lastseen": lastseen,
             "isnewUser":isnewUser,
-            "sugarTarget":sugarTarget
+            "sugarTarget":sugarTarget,
+            "drname": drname ?? "",
+            "drphone": drphone,
+            "drdesig": drdesig ?? "",
+            "drlicense":drlicense ?? ""
+            
         ]
     }
 }
