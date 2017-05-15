@@ -19,9 +19,9 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     var exercise: [String] = [String]()
     var MealCarbs:Int=0
-    var targetBGL:Int=100
     var nowBGL:Int=0
     var excSelected: Int=0  //no exercise selected by default
+    var targetBGL:Int=100
     var RuleVar:Int = 1700
     
     var tField: UITextField!
@@ -69,7 +69,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView
     {
         let pickerLabel = UILabel()
-        pickerLabel.textColor = UIColor.white
+        pickerLabel.textColor = UIColor.black
         pickerLabel.text = exercise[row]
         // pickerLabel.font = UIFont(name: pickerLabel.font.fontName, size: 15)
         pickerLabel.font = UIFont(name: "Helvetica Neue", size: 15) // In this use your custom font
@@ -90,7 +90,10 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         var FirstTimeUser:Bool=true
         var lastchecked:Int=0
         var recordInsulin:Int=0
-        var residue:Int=0
+        var residue:Float=0
+        
+
+        
         
         let int_nowtime=Int(NSDate().timeIntervalSince1970)
         let nowtime=String(describing:int_nowtime )
@@ -123,6 +126,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                 let userpatient = snapshot.value as? NSDictionary
                 bolustype = (userpatient?["bolus"] as? String)!
                 basaltype = (userpatient?["basal"] as? String)!
+                self.targetBGL = (userpatient?["sugarTarget"] as? Int)!
                 yesterday_insulin=(userpatient?["initialInsulin"] as? Int)!
                 //get value for lastseen
                 lastchecked=(userpatient?["lastseen"] as? Int)!
@@ -256,7 +260,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                                 
                                 self.ref.child("dose").child(userID!).child(dayDate).observeSingleEvent(of: .value, with: { (snapshot) in
                                     if !snapshot.exists() {  //no record of doses from today
-                                        residue=0
+                                        residue=0.0
                                     }
                                     else{
                                         var todaybasaldoses = [Dose]()
@@ -312,14 +316,20 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     
     
-    func CalcCarbInsulinRatio(units: Int,PrevCarbIntake:Int) -> Int {
-        
-        return PrevCarbIntake/units
+    func CalcCarbInsulinRatio(units: Int,PrevCarbIntake:Int) -> Float {
+        let _units = Float(units)
+        let _PrevCarbIntake = Float(PrevCarbIntake)
+
+        print("sumofunits",_units)
+        print("PrevCarbIntake",_PrevCarbIntake)
+        return (_PrevCarbIntake/_units)
     }
     
-    func CalcInsulinSensitivity(units: Int) -> Int {
+    func CalcInsulinSensitivity(units: Int) -> Float {
         print(RuleVar)
-        return RuleVar/units
+        let _RuleVar=Float(RuleVar)
+        let _units=Float(units)
+        return (_RuleVar/_units)
     }
     func CalcResidualComponent(typeInsulin:String) -> Int {
         let activity_duration:Int
@@ -338,15 +348,15 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         }
         return activity_duration
     }
-    func CalcResidueInsulin(time:Int, quantity:Int,type:String)-> Int{
+    func CalcResidueInsulin(time:Int, quantity:Int,type:String)-> Float{
         let peakactivity = CalcResidualComponent(typeInsulin: type)
-        var residue:Int
+        var residue:Float
         if time>peakactivity
         {
-            residue=0
+            residue=0.0
         }
         else{
-            residue = (1-(time/peakactivity))*quantity
+            residue = (1-(Float(time/peakactivity)))*Float(quantity)
         }
         return residue
     }
@@ -413,14 +423,21 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     
     
-    func CalcInsulin(sumofunits: Int, sumofcarbs:Int, residualeffect:Int) -> Int {
+    func CalcInsulin(sumofunits: Int, sumofcarbs:Int, residualeffect:Float) -> Int {
         //get yesterdays sum of units
         let ISF=CalcInsulinSensitivity(units: sumofunits)
         print("isf is",ISF)
+       
         let CarbInsRatio=CalcCarbInsulinRatio(units: sumofunits,PrevCarbIntake:sumofcarbs)
         print("CarbInsRatio is",CarbInsRatio)
-        let InsulinUnits=(MealCarbs/CarbInsRatio)+((nowBGL-targetBGL)/ISF)-CalcExerciseComponent()-residualeffect
-        return InsulinUnits
+        
+        let MealComponent:Float=Float(MealCarbs)/CarbInsRatio
+        let target_difference=nowBGL-targetBGL
+        let ISFComponent:Float=Float(target_difference)/ISF
+        let ExerciseComponent = Float(CalcExerciseComponent())
+        
+        let InsulinUnits:Float=MealComponent+ISFComponent-ExerciseComponent-residualeffect
+        return Int(InsulinUnits)
     }
     func readjustTextField(textField: UITextField!)
     {

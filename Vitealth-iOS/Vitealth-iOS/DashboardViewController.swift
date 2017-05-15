@@ -20,6 +20,12 @@ class DashboardViewController: UIViewController {
     @IBOutlet weak var min: UILabel!
     @IBOutlet weak var avg: UILabel!
     
+    @IBOutlet weak var redDrop: UIImageView!
+    
+    @IBOutlet weak var yellowDrop: UIImageView!
+    
+    @IBOutlet weak var greenDrop: UIImageView!
+    
     
     @IBOutlet weak var units1: UILabel!
     
@@ -41,8 +47,7 @@ class DashboardViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         LoadLabels()
-        
-    }
+            }
     
     
     override func viewDidLoad() {
@@ -52,6 +57,25 @@ class DashboardViewController: UIViewController {
        // activityIndicator.activityIndicatorViewStyle  = UIActivityIndicatorViewStyle.gray;
        // activityIndicator.center = view.center;
        // LoadLabels()
+        mainLabel.numberOfLines = 0
+        mainLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
+        redDrop.layer.borderWidth = 1
+        redDrop.layer.masksToBounds = false
+        redDrop.layer.cornerRadius = redDrop.frame.height/2
+        redDrop.clipsToBounds = true
+        redDrop.layer.borderColor = UIColor.red.cgColor
+        yellowDrop.layer.borderWidth = 1
+        yellowDrop.layer.masksToBounds = false
+        yellowDrop.layer.cornerRadius = yellowDrop.frame.height/2
+        yellowDrop.clipsToBounds = true
+        yellowDrop.layer.borderColor = UIColor.cyan.cgColor
+        greenDrop.layer.borderWidth = 1
+        greenDrop.layer.masksToBounds = false
+        greenDrop.layer.cornerRadius = greenDrop.frame.height/2
+        greenDrop.clipsToBounds = true
+        greenDrop.layer.borderColor = UIColor.green.cgColor
+ 
+
        
 
         
@@ -251,22 +275,22 @@ class DashboardViewController: UIViewController {
                             
                             print("Set BGL labels")
                             
-                            var maxBGLstr = "max =__ mg/dl"
-                            var minBGLstr = "min =__ mg/dl"
-                            var avgBGLstr = "avg =__ mg/dl"
+                            var maxBGLstr = "   mg/dl"
+                            var minBGLstr = "   mg/dl"
+                            var avgBGLstr = "   mg/dl"
                             if let maxBGL = BGLs.max() {
                                 maxBGLstr = "\(maxBGL)"
-                                self.max.text="max ="+maxBGLstr+" mg/dl"
+                                self.max.text="   "+maxBGLstr+" mg/dl"
                             }
                             if let minBGL = BGLs.min() {
                                 minBGLstr = "\(minBGL)"
-                                self.min.text="min ="+minBGLstr+" mg/dl"
+                                self.min.text="   "+minBGLstr+" mg/dl"
                             }
                             if let average: Int = ( BGLs as NSArray).value(forKeyPath: "@avg.self") as? Int
                             {
                                 avgBGLstr = "\(average)"
                                 averageBGL=average
-                                 self.avg.text="avg ="+avgBGLstr+" mg/dl"
+                                 self.avg.text="   "+avgBGLstr+" mg/dl"
                             }
 
                            
