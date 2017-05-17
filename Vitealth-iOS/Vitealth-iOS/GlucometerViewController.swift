@@ -57,8 +57,7 @@ class GlucometerViewController: UIViewController {
         pebbleStatus.textColor = UIColor.green
         readingProgress.progress = 1
         bglValue.text = "BGL = " + "\(randomBGL)"+" mg/dl "
-        let myInt = 26
-        let myInt1 = 10
+        
 
       
 

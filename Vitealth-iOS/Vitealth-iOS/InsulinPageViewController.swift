@@ -1,15 +1,15 @@
   //
-//  InsulinPageViewController.swift
-//  Vitealth-iOS
-//
-//  Created by Javeria Afzal on 3/1/17.
-//  Copyright © 2017 Saad Qureshi. All rights reserved.
-//
-
-import UIKit
-import FirebaseDatabase
-import FirebaseAuth
-class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
+  //  InsulinPageViewController.swift
+  //  Vitealth-iOS
+  //
+  //  Created by Javeria Afzal on 3/1/17.
+  //  Copyright © 2017 Saad Qureshi. All rights reserved.
+  //
+  
+  import UIKit
+  import FirebaseDatabase
+  import FirebaseAuth
+  class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
     
     
@@ -92,9 +92,9 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         var recordInsulin:Int=0
         var residue:Float=0
         
-
         
         
+        //Get Time Block insluding epoch, time of day, and string
         let int_nowtime=Int(NSDate().timeIntervalSince1970)
         let nowtime=String(describing:int_nowtime )
         let currentDate = NSDate()
@@ -108,9 +108,10 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         print(hour)
         
         
+        //Get user
         
         let user = FIRAuth.auth()?.currentUser;
-        
+        //If user got, proceed
         if ((user) != nil) {
             print("User is signed in.")
             
@@ -118,29 +119,34 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
             //get id
             let userID = user?.uid
             
-            //get his bolus insulin
+            //get his patient details-> bolus,basal,sugarTarget,inial Insulin used, when last dose taken, if he's new
             ref.child("patient").child(userID!).observeSingleEvent(of: .value, with: { (snapshot) in
                 if !snapshot.exists() {
                     print("oh snap")
                     return }
+                
+                //insert else?
                 let userpatient = snapshot.value as? NSDictionary
                 bolustype = (userpatient?["bolus"] as? String)!
                 basaltype = (userpatient?["basal"] as? String)!
                 self.targetBGL = (userpatient?["sugarTarget"] as? Int)!
-                yesterday_insulin=(userpatient?["initialInsulin"] as? Int)!
-                //get value for lastseen
-                lastchecked=(userpatient?["lastseen"] as? Int)!
-                recordInsulin=(userpatient?["initialInsulin"] as? Int)!  //in case user does not  have a yesterday record
+                
+                lastchecked=(userpatient?["lastseen"] as? Int)!//get value for lastseen
+                recordInsulin=(userpatient?["initialInsulin"] as? Int)!  //in case user does not  have a yesterday record and in case user is first time using
                 FirstTimeUser=(userpatient?["isnewUser"] as? Bool)!
-                print(bolustype)
-                //Apply BD Rule Value for ISF
+                print("User details fetched such as ",bolustype,basaltype)
+                
+                
+                //Apply BD Rule Value for ISF depending on his bolus insulin
                 if bolustype=="Regular"
                 {self.RuleVar=1500 }
                 else
                 {self.RuleVar=1700}
-                //is user logged in the first time
                 
-                print(FirstTimeUser)
+                
+                
+                
+                print("/Is user logged in the first time ",FirstTimeUser)
                 
                 
                 
@@ -149,19 +155,18 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                     
                     //Apply 500 Rule
                     insulin=self.CalcInsulin(sumofunits: yesterday_insulin,sumofcarbs:500,residualeffect:0)
-                    self.ref.child("patient").child(userID!).updateChildValues(["isnewUser": false])
-                    self.ref.child("patient").child(userID!).updateChildValues(["lastseen": int_nowtime])
+                    
                     print("value set false")
                     let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
                     alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
                         print("Handle Ok logic here")
                         let insulindose = Dose(insulinQuant: insulin,mealCarbs:self.MealCarbs,insulinType:bolustype,glucose:self.nowBGL,user: user!.email!,timeStamp:nowtime,timeofday:hour, basal:false)
                         
-                        print("Object created")
-                        print(insulindose.user)
-                        print((user?.uid)!)
+                        print("Dose Object created")
+                        
                         let UserDoseRef = self.doseref.child(userID!).child(dayDate).child(nowtime)
                         UserDoseRef.setValue(insulindose.toAnyObject())
+                        
                     }))
                     
                     alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in
@@ -169,16 +174,23 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                         self.AdjustInsulinDose(mealcarbs:self.MealCarbs,bolus:bolustype,BGL:self.nowBGL, email:user!.email!,time:nowtime,day:dayDate,uid:userID!,hourday: hour)
                     }))
                     
-                    self.present(alert, animated: true, completion: nil)
+                    self.present(alert, animated: true, completion: {
+                        print("completion block")
+                        print("Dose Object saved")
+                        //update last seen and new tag
+                        self.ref.child("patient").child(userID!).updateChildValues(["isnewUser": false])
+                        self.ref.child("patient").child(userID!).updateChildValues(["lastseen": int_nowtime])
+                    })
                     
                 }
                 else{
                     //86400 seconds in one day
                     //if user is not using the portal for the first time, access yesterdays values
-                   
-                    print(lastchecked)
+                    
+                    print("last checked",lastchecked)
+                    print("nowtime",nowtime)
                     //update last seen
-                    self.ref.child("patient").child(userID!).updateChildValues(["lastseen": int_nowtime])
+                    
                     let offline_time=int_nowtime-lastchecked
                     print(offline_time)
                     var activeDays:Int=1 //by default get the day before
@@ -206,16 +218,18 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                             //use 500 Rule and ask user for his stats
                             yesterday_insulin=Int(self.tField.text!)!
                             yesterday_totalcarb=500
-                            print("Item : \(String(describing: self.tField.text))")
+                            print("Insulin used yesterday : \(String(describing: self.tField.text))")
                             insulin=self.CalcInsulin(sumofunits:  yesterday_insulin, sumofcarbs:yesterday_totalcarb,residualeffect: 0) //for now
                             print("insulin",insulin)
-                            self.ref.child("patient").child(userID!).updateChildValues(["initialInsulin": yesterday_insulin])
+                            
                             self.DisplayInsulin(insulin_q: insulin,meal_carbs:self.MealCarbs,_bolus:bolustype,_BGL:self.nowBGL, _email:user!.email!,_time:nowtime,_day:dayDate,_uid:userID!,hourofday:hour)
                             
                             
                         }))
                         self.present(Enteralert, animated: true, completion: {
                             print("completion block")
+                            self.ref.child("patient").child(userID!).updateChildValues(["lastseen": int_nowtime])
+                            self.ref.child("patient").child(userID!).updateChildValues(["initialInsulin": yesterday_insulin])
                         })
                         
                         
@@ -234,35 +248,40 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                                 insulin=self.CalcInsulin(sumofunits:  recordInsulin, sumofcarbs:500,residualeffect: 0) //for now
                                 print(insulin)
                                 self.DisplayInsulin(insulin_q: insulin,meal_carbs:self.MealCarbs,_bolus:bolustype,_BGL:self.nowBGL, _email:user!.email!,_time:nowtime,_day:dayDate,_uid:userID!,hourofday:hour)
+                                self.ref.child("patient").child(userID!).updateChildValues(["lastseen": int_nowtime])
                             }
                                 
                                 
                                 //if exists
                             else{
                                 print("get all daily doses")
-                                
+                                //get all doses from yesterday
                                 var dailydoses = [Dose]()
                                 
                                 for item in snapshot.children {
                                     let dailydose = Dose(snapshot: item as! FIRDataSnapshot)
                                     dailydoses.append(dailydose)
-                                    if !dailydose.basal
-                                    {   yesterday_insulin=yesterday_insulin+dailydose.insulinQuant
-                                        yesterday_totalcarb=yesterday_totalcarb+dailydose.mealCarbs
-                                    }
+                                    
+                                    yesterday_insulin=yesterday_insulin+dailydose.insulinQuant  //sum of insulin used yesterday
+                                    yesterday_totalcarb=yesterday_totalcarb+dailydose.mealCarbs //sum of carbs eaten yesterday
+                                    self.ref.child("patient").child(userID!).updateChildValues(["lastseen": int_nowtime]) 
+                                
                                     
                                 }
                                 
                                 print("yesterday insulin1",yesterday_insulin)
                                 if yesterday_totalcarb == 0 //if user didnot take carbs the whole day yesterday, use 500 Rule
                                 {yesterday_totalcarb=500}
-                                //check for residual insulin
                                 
+                                
+                                //to check for residual insulin
+                                //get doses taken today
                                 self.ref.child("dose").child(userID!).child(dayDate).observeSingleEvent(of: .value, with: { (snapshot) in
-                                    if !snapshot.exists() {  //no record of doses from today
+                                    if !snapshot.exists() {  //no record of any insulin doses from today
                                         residue=0.0
                                     }
                                     else{
+                                        //if there is insulin taken today, are there basal doses?
                                         var todaybasaldoses = [Dose]()
                                         for item in snapshot.children {
                                             let todaydose = Dose(snapshot: item as! FIRDataSnapshot)
@@ -273,19 +292,31 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
                                             }
                                             
                                         }
-                                        let lastbasaldose=todaybasaldoses.last  //last basal dose
-                                        let elapsedhours=(int_nowtime-Int((lastbasaldose?.timeStamp)!)!)/3600
-                                        print(elapsedhours)
-                                        residue = self.CalcResidueInsulin(time:elapsedhours,quantity:(lastbasaldose?.insulinQuant)!,type:(lastbasaldose?.insulinType)!)
-                                        print("Residual effect", residue)
+                                        if !todaybasaldoses.isEmpty  //if  basal dose taken today
+                                        {
+                                            
+                                            let lastbasaldose=todaybasaldoses.last  //last basal dose
+                                            let elapsedminutes:Float=(Float(int_nowtime)-Float((lastbasaldose?.timeStamp)!)!)/60
+                                            print("User took basal minutes  ago",elapsedminutes)
+                                            residue = self.CalcResidueInsulin(time:elapsedminutes,quantity:(lastbasaldose?.insulinQuant)!,type:(lastbasaldose?.insulinType)!)
+                                        }
+                                        else   //no basal dose taken yet
+                                        {
+                                            print("no basal doses taken yet")
+                                            residue=0.0
+                                        }
+                                        
+                                        
                                     }
                                     
-                                    
+                                    print("Residual effect", residue)
                                     
                                     insulin=self.CalcInsulin(sumofunits:  yesterday_insulin, sumofcarbs:yesterday_totalcarb,residualeffect:residue) //for now
                                     print("insulin",insulin)
                                     
                                     self.DisplayInsulin(insulin_q: insulin,meal_carbs:self.MealCarbs,_bolus:bolustype,_BGL:self.nowBGL, _email:user!.email!,_time:nowtime,_day:dayDate,_uid:userID!,hourofday:hour)
+                                    self.ref.child("patient").child(userID!).updateChildValues(["lastseen": int_nowtime])
+                                    
                                 })
                             }
                         })
@@ -319,7 +350,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     func CalcCarbInsulinRatio(units: Int,PrevCarbIntake:Int) -> Float {
         let _units = Float(units)
         let _PrevCarbIntake = Float(PrevCarbIntake)
-
+        
         print("sumofunits",_units)
         print("PrevCarbIntake",_PrevCarbIntake)
         return (_PrevCarbIntake/_units)
@@ -333,30 +364,44 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
     func CalcResidualComponent(typeInsulin:String) -> Int {
         let activity_duration:Int
+        print(typeInsulin)
         switch typeInsulin {
         case "Lantus":
+            
+            
             let activity_lower=Insulin.LongAction.Lantus.onsetmin+Insulin.LongAction.Lantus.activationtime
             let activity_higher=Insulin.LongAction.Lantus.onsetmax+Insulin.LongAction.Lantus.activationtime
             activity_duration=activity_higher-activity_lower
-        case "Ultralente":
+            
+        case "Utralente":
+        
             let activity_lower=Insulin.LongAction.Ultralente.onsetmin+Insulin.LongAction.Ultralente.activationtimemin
             let activity_higher=Insulin.LongAction.Ultralente.onsetmax+Insulin.LongAction.Ultralente.activationtimemax
             activity_duration=activity_higher-activity_lower
+            print(activity_duration)
         default:
-            activity_duration=0
+            activity_duration = -1
+            print("default")
             
         }
         return activity_duration
     }
-    func CalcResidueInsulin(time:Int, quantity:Int,type:String)-> Float{
+    func CalcResidueInsulin(time:Float, quantity:Int,type:String)-> Float{
         let peakactivity = CalcResidualComponent(typeInsulin: type)
+        print("peak activity",peakactivity)
+        let int_minutes=Int(time)
+        print("int minutes", int_minutes)
         var residue:Float
-        if time>peakactivity
+        if int_minutes>peakactivity
         {
+            print("Exceeds peak activity")
             residue=0.0
         }
         else{
-            residue = (1-(Float(time/peakactivity)))*Float(quantity)
+            residue = (1-(Float(int_minutes/peakactivity)))*Float(quantity)
+            if Int(residue)<0
+            {residue=0.0
+            }
         }
         return residue
     }
@@ -427,7 +472,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         //get yesterdays sum of units
         let ISF=CalcInsulinSensitivity(units: sumofunits)
         print("isf is",ISF)
-       
+        
         let CarbInsRatio=CalcCarbInsulinRatio(units: sumofunits,PrevCarbIntake:sumofcarbs)
         print("CarbInsRatio is",CarbInsRatio)
         
@@ -435,6 +480,7 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
         let target_difference=nowBGL-targetBGL
         let ISFComponent:Float=Float(target_difference)/ISF
         let ExerciseComponent = Float(CalcExerciseComponent())
+        print("Exercise component",ExerciseComponent )
         
         let InsulinUnits:Float=MealComponent+ISFComponent-ExerciseComponent-residualeffect
         return Int(InsulinUnits)
@@ -514,4 +560,4 @@ class InsulinPageViewController: UIViewController, UIPickerViewDelegate, UIPicke
      }
      */
     
-}
+  }

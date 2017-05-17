@@ -13,7 +13,8 @@ import Firebase
 class DashboardViewController: UIViewController {
     var patient=Patient()
 
-    @IBOutlet weak var mainLabel: UILabel!
+    @IBOutlet weak var mainDisplay: UITextView!
+    
     
     @IBOutlet weak var max: UILabel!
     
@@ -57,8 +58,7 @@ class DashboardViewController: UIViewController {
        // activityIndicator.activityIndicatorViewStyle  = UIActivityIndicatorViewStyle.gray;
        // activityIndicator.center = view.center;
        // LoadLabels()
-        mainLabel.numberOfLines = 0
-        mainLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
+        
         redDrop.layer.borderWidth = 1
         redDrop.layer.masksToBounds = false
         redDrop.layer.cornerRadius = redDrop.frame.height/2
@@ -90,6 +90,15 @@ class DashboardViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    func ActionCompleted()
+    {
+        let alertController1 = UIAlertController(title: "Vitealth zPortal", message:" Basal Insulin Administered" , preferredStyle: .alert)
+        
+        let defaultAction1 = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        alertController1.addAction(defaultAction1)
+        
+        self.present(alertController1, animated: true, completion: nil)
+    }
     
     
     func CalcBasalInsulin(weight:Int) -> Int
@@ -156,9 +165,11 @@ class DashboardViewController: UIViewController {
                     UserDoseRef.setValue(basaldose.toAnyObject())
                     
                     print("Item : \(String(describing: self.tField.text))")
+                    
                 }))
                 self.present(alert, animated: true, completion: {
-                    print("completion block")
+                    self.ActionCompleted()
+                    
                 })
 
                 
@@ -198,6 +209,7 @@ class DashboardViewController: UIViewController {
             ref.child("patient").child(userID!).observeSingleEvent(of: .value, with: { (snapshot) in
                 if !snapshot.exists() {
                     print("oh snap")
+                    self.mainDisplay.text=" Couldn't fetch details."
                     return }
                 let userpatient = snapshot.value as? NSDictionary
                 
@@ -210,7 +222,7 @@ class DashboardViewController: UIViewController {
                 //is user logged in the first time
                 print(FirstTimeUser)
                 if FirstTimeUser {
-                    self.mainLabel.text="Welcome to Vitealth zPortal,a fitbit for Diabetes. Proceed to Glucometer if you want to check your Sugar Level"
+                    self.mainDisplay.text="Welcome to Vitealth zPortal,a fitbit for Diabetes. Proceed to Glucometer if you want to check your Sugar Level"
                     
                 }
                 else{
@@ -227,7 +239,7 @@ class DashboardViewController: UIViewController {
                             
                         } else if offline_time > 172800   {
                             activeDays = 0
-                            self.mainLabel.text="We haven't seen you for a while"
+                            self.mainDisplay.text="We haven't seen you for a while"
                         }
                         
                         
@@ -243,36 +255,62 @@ class DashboardViewController: UIViewController {
                        
                         let fechDate=dateFormatter.string(from: intfetchDate as Date)
                          print("display from ",fechDate)
-                        self.ref.child("dose").child(userID!).child(fechDate).observeSingleEvent(of: .value, with: { (snapshot) in
+                        self.ref.child("dose").child(userID!).child(dayDate).observeSingleEvent(of: .value, with: { (snapshot) in
                             if !snapshot.exists() {
                                 print("oh snap")
                             }
-                            print("get all daily doses")
+                            print("get all daily doses from today")
                             
-                            var dailydoses = [Dose]()
+                            var todaydailydoses = [Dose]()
+                            for item in snapshot.children {
+                                let dailydose = Dose(snapshot: item as! FIRDataSnapshot)
+                                
+                                todaydailydoses.append(dailydose)
+                                if(dailydose.mealCarbs == 0)
+                                {nonmeal_units=nonmeal_units+dailydose.insulinQuant}
+                                else{
+                                    if(dailydose.timeofday > 5 && dailydose.timeofday < 12)
+                                    {breakfast_units=breakfast_units+dailydose.insulinQuant}
+                                    else if(dailydose.timeofday > 12 && dailydose.timeofday < 17)
+                                    {lunch_units=breakfast_units+dailydose.insulinQuant}
+                                    else
+                                    {dinner_units=dinner_units+dailydose.insulinQuant}
+                                    
+                                }
+                                
+                                
+                                
+                            }
+                            print("set insulins")
+                            //set insulin units
+                            self.units1.text=String(breakfast_units) + " units"
+                            self.units2.text=String(lunch_units) + " units"
+                            self.units3.text=String(dinner_units) + " units"
+                            self.units4.text=String(nonmeal_units) + " units"
+                            
+                            
+                            
+                        })
+                        self.ref.child("dose").child(userID!).child(fechDate).observeSingleEvent(of: .value, with: { (snapshot) in
+                            if !snapshot.exists() {
+                                print("oh snap")
+                                
+                            }
+                            print("get all daily doses from yesterday")
+                            
+                            var yestdailydoses = [Dose]()
+                            var sumofBGLs:Int=0
                             for item in snapshot.children {
                                 let dailydose = Dose(snapshot: item as! FIRDataSnapshot)
                                 if !dailydose.basal
                                 {
-                                    dailydoses.append(dailydose)
+                                    yestdailydoses.append(dailydose)
                                     BGLs.append(dailydose.glucose)
-                                    print(dailydose.glucose)
-                                    if(dailydose.mealCarbs == 0)
-                                    {nonmeal_units=nonmeal_units+dailydose.insulinQuant}
-                                    else{
-                                        if(dailydose.timeofday > 5 && dailydose.timeofday < 12)
-                                        {breakfast_units=breakfast_units+dailydose.insulinQuant}
-                                        else if(dailydose.timeofday > 12 && dailydose.timeofday < 17)
-                                        {lunch_units=breakfast_units+dailydose.insulinQuant}
-                                        else
-                                        {dinner_units=dinner_units+dailydose.insulinQuant}
-                                        
-                                    }
+                                    sumofBGLs=sumofBGLs+dailydose.glucose
                                 }
                                 
                                 
                             }
-                            
                             print("Set BGL labels")
                             
                             var maxBGLstr = "   mg/dl"
@@ -286,43 +324,39 @@ class DashboardViewController: UIViewController {
                                 minBGLstr = "\(minBGL)"
                                 self.min.text="   "+minBGLstr+" mg/dl"
                             }
-                            if let average: Int = ( BGLs as NSArray).value(forKeyPath: "@avg.self") as? Int
-                            {
-                                avgBGLstr = "\(average)"
-                                averageBGL=average
-                                 self.avg.text="   "+avgBGLstr+" mg/dl"
-                            }
-
-                           
                             
-                            
-                           
+                            let average =  Int(sumofBGLs/BGLs.count)  //( BGLs as NSArray).value(forKeyPath: "@avg.self") as? Int
+                            avgBGLstr = "\(average)"
+                            averageBGL=average
+                            self.avg.text="   "+avgBGLstr+" mg/dl"
                             
 
+                           
+                            print(averageBGL)
                             if averageBGL == -1{
-                                self.mainLabel.text=" Couldn't fetch details."
+                                print("no avg")
+                                self.mainDisplay.text=" Couldn't fetch details."
                             }
-                            else if averageBGL<90 {
-                            self.mainLabel.text=" Your average blood glucose is low. Consider increasing carb intake or decreasing insulin."
+                            else if averageBGL<=90 {
+                                
+                            self.mainDisplay.text=" Your average blood glucose is low. Consider increasing carb intake or decreasing insulin."
                             }
-                            else if averageBGL>130 {
-                            self.mainLabel.text=" Your average blood glucose is high. Consider decreasing carb intake or increasing insulin."
+                            else if averageBGL>=130 {
+                              
+                            self.mainDisplay.text=" Your average blood glucose is high. Consider decreasing carb intake or increasing insulin."
                             }
                             else if averageBGL>90 && averageBGL<130{
-                             self.mainLabel.text=" Your average blood glucose is in range. You are on the road to good health."
+                             self.mainDisplay.text=" Your average blood glucose is in range. You are on the road to good health."
                             }
                             
                             
-                            
-                            //set insulin units
-                            self.units1.text=String(breakfast_units) + " units"
-                            self.units2.text=String(lunch_units) + " units"
-                            self.units3.text=String(dinner_units) + " units"
-                            self.units4.text=String(nonmeal_units) + " units"
                             
                             
                             
                         })
+                        
+
+                        
                     }
                 }
                 
