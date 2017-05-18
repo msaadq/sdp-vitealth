@@ -38,6 +38,13 @@ class DashboardViewController: UIViewController {
     
     @IBOutlet weak var basalButton: RaisedButton!
     
+    static var yestdailydoses = [Dose]()
+    static var todaydailydoses = [Dose]()
+    static var yestDailyDosesBolus = [Dose]()
+    static var todayDailyDosesBolus = [Dose]()
+
+    
+    
     let ref = FIRDatabase.database().reference()
     let doseref = FIRDatabase.database().reference(withPath: "dose")
     var tField: UITextField!
@@ -261,10 +268,16 @@ class DashboardViewController: UIViewController {
                             }
                             print("get all daily doses from today")
                             
-                            var todaydailydoses = [Dose]()
+                            DashboardViewController.todaydailydoses.removeAll()
+                            
                             for item in snapshot.children {
                                 let dailydose = Dose(snapshot: item as! FIRDataSnapshot)
-                                todaydailydoses.append(dailydose)
+                                DashboardViewController.todaydailydoses.append(dailydose)
+                                
+                                if !dailydose.basal {
+                                    DashboardViewController.todayDailyDosesBolus.append(dailydose)
+                                }
+                                
                                 if(dailydose.mealCarbs == 0)
                                 {nonmeal_units=nonmeal_units+dailydose.insulinQuant}
                                 else{
@@ -297,13 +310,16 @@ class DashboardViewController: UIViewController {
                             }
                             print("get all daily doses from yesterday")
                             
-                            var yestdailydoses = [Dose]()
+                            
+                            DashboardViewController.yestdailydoses.removeAll()
+                            
                             var sumofBGLs:Int=0
                             for item in snapshot.children {
                                 let dailydose = Dose(snapshot: item as! FIRDataSnapshot)
                                 if !dailydose.basal
                                 {
-                                    yestdailydoses.append(dailydose)
+                                    DashboardViewController.yestdailydoses.append(dailydose)
+                                    DashboardViewController.yestDailyDosesBolus.append(dailydose)
                                     BGLs.append(dailydose.glucose)
                                     sumofBGLs=sumofBGLs+dailydose.glucose
                                 }
