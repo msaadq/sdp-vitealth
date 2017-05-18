@@ -264,7 +264,6 @@ class DashboardViewController: UIViewController {
                             var todaydailydoses = [Dose]()
                             for item in snapshot.children {
                                 let dailydose = Dose(snapshot: item as! FIRDataSnapshot)
-                                
                                 todaydailydoses.append(dailydose)
                                 if(dailydose.mealCarbs == 0)
                                 {nonmeal_units=nonmeal_units+dailydose.insulinQuant}

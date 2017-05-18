@@ -1,0 +1,107 @@
+ATMEGA328P with Mobile iOS Application README
+
+Version 1.0
+2017
+
+This software implements a very simple message queue framework of ATMEGA328P with iOS Mobile Applications and PC Bluetooth.  
+Applications include:
+
+	-Secured P2P communication over Bluetooth
+	-Enabling and Disabling the sensors remotely
+	-Requesting the required Data and Receiving it in the desired format
+    
+MCU Configuration:
+    -ATMEGA328P
+        -Sampling Rate: 1800Hz (300 cycles / sec)
+        -Window: 5 cycles of data
+
+USAGE
+-----
+
+	This extension is based on the idea of 3 Digit I/O commands appended after the Prefix which is either I or O depending on where the command is coming from. 'I' representing the Command by the MCU and 'O' being the commands from Application.
+
+	Following is the list of all the available commands along with their format:
+
+    NOTE: Occurence of {} brackets mean that the terms inside them are not used literally and {} and are not included in the syntax.
+
+	'O' Commands:
+
+		-Availablility Enable / Disable
+    		OAVA:1! / OAVA:0!
+
+		-Request sensors' (Accelerometer + PPG acquisition system) status / Enable Sensors / Disable Sensors 
+    		OGSS:{Command}!
+                Commands:
+                    - -1 : Do nothing
+                    - 0 : Turn off sensor
+                    - 1 : Turn on sensor 
+
+        -Request Sensors' Data
+            OGSD:{Command}!
+                Commands:
+                    - 0 : No Action
+                    - {Number (float)} : No. of duty samples
+
+
+	'I' Commands:
+
+        -Availablility Enable / Disable
+            IAVA:1! / IAVA:0!
+
+        -Responds with sensors statuses after command
+            IGSS:{Sensors' status}!
+                Status:
+                    - 0 : Sensor is off
+                    - 1 : Sensor is on
+
+            {No Response}
+            // Availability not confirmed
+
+        -Sends the required Data
+            IGSD:{LED1 val}{LED1 amb}{LED2 val}{LED2 amb}{LED3 val}{LED3 amb}{Acc x}{Acc y}{Acc z}....!
+
+            {Sensors not available}
+            IGSS:0!
+
+            {No Response}
+            // Availability not confirmed
+
+        -{Any other command}
+            IINV:0!
+            // Invalid Command
+
+            {No Response}
+            // Availability not confirmed
+
+
+Standard Operating Procedure (SOP) Examples
+-------------------------------------------
+
+    // Random Commands before OAVA:1!
+
+    {Any command} -> {No response}
+
+
+	// Availablility
+
+	OAVA:1! -> IAVA:1!
+	OAVA:0! -> IAVA:0!
+
+
+    // Any invalid command after IAUT:1!
+    {Invalid command} -> INV:0!
+
+
+    // Requests the status of all sensors
+
+    OGSS:-1! -> IGSS:0!
+
+
+    // Requesting sensor data before enabling
+
+    OGSD:1000! -> IGSS:0!
+
+
+	// Requests the data from all sensors for 1000 cycles
+
+	OGSD:1000! -> IGSD:{LED1 val}{LED1 amb}{LED2 val}{LED2 amb}{LED3 val}{LED3 amb}{Acc x}{Acc y}{Acc z}...!

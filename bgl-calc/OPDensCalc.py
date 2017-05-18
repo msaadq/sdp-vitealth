@@ -5,15 +5,8 @@ Created on Mon Feb 06 14:12:29 2017
 @author: Ma'am Afzal
 """
 
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Feb 03 16:34:00 2017
-
-@author: Ma'am Afzal
-"""
-
-
 import pandas as p
+import numpy as np
 import math
 
     
@@ -29,7 +22,7 @@ def OPDensCalc(stabledur,heartrate,filename) :
     #window_boundary=5
     op_densdf=p.DataFrame()
     op_densdf=op_densdf.astype(float)
-    for offset in xrange (offset,window_boundary-window_size,window_size):
+    for offset in np.arange(offset,window_boundary-window_size,window_size):
         
         window_size+=offset
         results=p.read_csv(filename, skiprows=offset, nrows=window_size,usecols=[2,3,4,5],header=None,names=[ 'w1', 'w2','w3','noise'])  #returns panda dataframe [no.row *no of colums] # Prints "[[ 0.  0.]  [ 0.  0.]]"

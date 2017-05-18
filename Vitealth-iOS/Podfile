@@ -8,6 +8,7 @@ target 'Vitealth-iOS' do
   pod 'Firebase/Database'
   pod 'Firebase/Core'
   pod 'Firebase/Storage'
+  pod ‘Charts’
   pod 'Material', '~> 2.0'
   # Pods for Vitealth-iOS
 

@@ -24,6 +24,8 @@ class SettingsViewController: UIViewController,UIPickerViewDelegate, UIPickerVie
     let user = FIRAuth.auth()?.currentUser;
     let ref = FIRDatabase.database().reference()
     
+    
+    
     @IBOutlet weak var picture: UIImageView!
     
     @IBOutlet weak var Name: UILabel!
@@ -192,6 +194,16 @@ class SettingsViewController: UIViewController,UIPickerViewDelegate, UIPickerVie
         alert.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
         self.present(alert, animated: true, completion: nil)
         print("saved")
+    }
+    
+    
+    @IBAction func logOut(_ sender: Any) {
+        do{
+            try FIRAuth.auth()?.signOut()
+            performSegue(withIdentifier: "signOut", sender: self)
+        }catch{
+            print("Error while signing out!")
+        }
     }
     
     func hideKeyboard() {

@@ -15,6 +15,7 @@ class GlucometerViewController: UIViewController {
     @IBOutlet weak var bglValue: UILabel!
     
     
+    
     var MealCarbs:Int=0
     var BGL:UInt32=0
     override func viewDidLoad() {

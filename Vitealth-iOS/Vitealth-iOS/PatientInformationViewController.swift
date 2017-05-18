@@ -24,7 +24,6 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
     @IBOutlet weak var basalpicker: UIPickerView!
     @IBOutlet weak var weight: UITextField!
     @IBOutlet weak var height: UITextField!
-    @IBOutlet weak var bdaypicker: UIDatePicker!
     @IBOutlet weak var h1bc: UITextField!
     @IBOutlet weak var sugartarget: TextField!
  
@@ -44,7 +43,6 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
     
     @IBOutlet weak var diabetesStack: UIStackView!
     @IBOutlet weak var yestUnits: UITextField!
-    @IBOutlet weak var pictureBuuton: UIButton!
     
     var imagepicker=UIImagePickerController()
     
@@ -163,6 +161,17 @@ class PatientInformationViewController: UIViewController, UIPickerViewDelegate, 
 
         
         return 0
+    }
+    
+    
+    @IBAction func SignOut(_ sender: Any) {
+        do{
+            try FIRAuth.auth()?.signOut()
+            performSegue(withIdentifier: "signOut", sender: self)
+        }catch{
+            print("Error while signing out!")
+        }
+        
     }
     
     // The data to return for the row and component (column) that's being passed in

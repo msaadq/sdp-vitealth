@@ -1,4 +1,7 @@
 PODS:
+  - Charts (3.0.2):
+    - Charts/Core (= 3.0.2)
+  - Charts/Core (3.0.2)
   - Firebase (3.12.0):
     - Firebase/Core (= 3.12.0)
   - Firebase/Auth (3.12.0):
@@ -52,6 +55,7 @@ PODS:
   - Material/Core (2.4.11)
 
 DEPENDENCIES:
+  - Charts
   - Firebase
   - Firebase/Auth
   - Firebase/Core
@@ -60,6 +64,7 @@ DEPENDENCIES:
   - Material (~> 2.0)
 
 SPEC CHECKSUMS:
+  Charts: 236d6ccdd0ce6feae151d89e829a7397381a21fd
   Firebase: 8e99eb1ff553ad5bcc6072cc3d925bb89c1244d6
   FirebaseAnalytics: 9c67af0ebeb8d2146c9b4ea2616439affa947b58
   FirebaseAuth: b436e4ecebe068bf8e8c6e4e29de5756ffe7ee24
@@ -73,6 +78,6 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 6f8d8b28b7e345549ac471071608170b31cb4977
   Material: 09b50565d8f824bd74881eba12d7c549b41f510d
 
-PODFILE CHECKSUM: 5f1ef269ff166e41fe7d040df466c0746b607f9a
+PODFILE CHECKSUM: 53687f6acfbde4dcc00f5d9123d66bf1ef0c8f9d
 
 COCOAPODS: 1.2.0

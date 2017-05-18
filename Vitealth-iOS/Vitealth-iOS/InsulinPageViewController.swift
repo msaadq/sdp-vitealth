@@ -23,6 +23,7 @@
     var excSelected: Int=0  //no exercise selected by default
     var targetBGL:Int=100
     var RuleVar:Int = 1700
+    var CarbInsRatio: Float = 0.0
     
     var tField: UITextField!
     
@@ -392,13 +393,12 @@
         let int_minutes=Int(time)
         print("int minutes", int_minutes)
         var residue:Float
-        if int_minutes>peakactivity
-        {
+        if int_minutes > peakactivity {
             print("Exceeds peak activity")
             residue=0.0
         }
         else{
-            residue = (1-(Float(int_minutes/peakactivity)))*Float(quantity)
+            residue = (1.0-(Float(int_minutes/peakactivity)))*Float(quantity)
             if Int(residue)<0
             {residue=0.0
             }
@@ -473,16 +473,18 @@
         let ISF=CalcInsulinSensitivity(units: sumofunits)
         print("isf is",ISF)
         
-        let CarbInsRatio=CalcCarbInsulinRatio(units: sumofunits,PrevCarbIntake:sumofcarbs)
+        CarbInsRatio=CalcCarbInsulinRatio(units: sumofunits,PrevCarbIntake:sumofcarbs)
         print("CarbInsRatio is",CarbInsRatio)
-        
+        print("residual effect",residualeffect)
         let MealComponent:Float=Float(MealCarbs)/CarbInsRatio
+        print("Meal Component",MealComponent)
         let target_difference=nowBGL-targetBGL
         let ISFComponent:Float=Float(target_difference)/ISF
+        print("ISF Component",ISFComponent)
         let ExerciseComponent = Float(CalcExerciseComponent())
         print("Exercise component",ExerciseComponent )
         
-        let InsulinUnits:Float=MealComponent+ISFComponent-ExerciseComponent-residualeffect
+        let InsulinUnits:Float = MealComponent + ISFComponent + ExerciseComponent - residualeffect
         return Int(InsulinUnits)
     }
     func readjustTextField(textField: UITextField!)
@@ -527,25 +529,47 @@
     
     func DisplayInsulin(insulin_q:Int,meal_carbs:Int,_bolus:String,_BGL:Int, _email:String,_time:String,_day:String,_uid:String,hourofday:Int)
     {
-        print(" insulin calc",insulin_q)
         
-        let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin_q)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
-            print("Handle Ok logic here")
-            let insulindose = Dose(insulinQuant: insulin_q,mealCarbs:meal_carbs,insulinType:_bolus,glucose:_BGL,user: _email,timeStamp:_time,timeofday:hourofday,basal:false)
+        if insulin_q >= 0 {
+            print(" insulin calc",insulin_q)
             
-            print("Object created")
+            let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin_q)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+                print("Handle Ok logic here")
+                let insulindose = Dose(insulinQuant: insulin_q,mealCarbs:meal_carbs,insulinType:_bolus,glucose:_BGL,user: _email,timeStamp:_time,timeofday:hourofday,basal:false)
+                
+                print("Object created")
+                
+                let UserDoseRef = self.doseref.child(_uid).child(_day).child(_time)
+                UserDoseRef.setValue(insulindose.toAnyObject())
+            }))
             
-            let UserDoseRef = self.doseref.child(_uid).child(_day).child(_time)
-            UserDoseRef.setValue(insulindose.toAnyObject())
-        }))
-        
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in
-            print("Handle Cancel Logic here")
-            self.AdjustInsulinDose(mealcarbs:meal_carbs,bolus:_bolus,BGL:_BGL, email:_email,time:_time,day:_day,uid:_uid,hourday:hourofday)
-        }))
-        
-        self.present(alert, animated: true, completion: nil)
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in
+                print("Handle Cancel Logic here")
+                self.AdjustInsulinDose(mealcarbs:meal_carbs,bolus:_bolus,BGL:_BGL, email:_email,time:_time,day:_day,uid:_uid,hourday:hourofday)
+            }))
+            
+            self.present(alert, animated: true, completion: nil)
+            
+        } else {
+            let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin_q * Int(CarbInsRatio))"+" units of Carbohydrates", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+                print("Handle Ok logic here")
+                let insulindose = Dose(insulinQuant: insulin_q,mealCarbs:meal_carbs,insulinType:_bolus,glucose:_BGL,user: _email,timeStamp:_time,timeofday:hourofday,basal:false)
+                
+                print("Object created")
+                
+                let UserDoseRef = self.doseref.child(_uid).child(_day).child(_time)
+                UserDoseRef.setValue(insulindose.toAnyObject())
+            }))
+            
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in
+                print("Handle Cancel Logic here")
+                self.AdjustInsulinDose(mealcarbs:meal_carbs,bolus:_bolus,BGL:_BGL, email:_email,time:_time,day:_day,uid:_uid,hourday:hourofday)
+            }))
+
+        }
+
     }
     
     

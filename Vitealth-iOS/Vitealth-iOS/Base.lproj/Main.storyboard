@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="kwK-Jb-SM2">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="kwK-Jb-SM2">
     <device id="retina5_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -162,8 +162,7 @@
                         <outlet property="emailTextField" destination="9Cm-oA-3Wu" id="kM2-xD-MqS"/>
                         <outlet property="loginbutton" destination="Pao-vc-xDL" id="KgL-By-JhR"/>
                         <outlet property="pwdTextField" destination="Uxj-dr-6hd" id="62n-Mk-3Ys"/>
-                        <segue destination="dwJ-aD-KED" kind="show" identifier="oldUser" id="aRi-PS-tfm"/>
-                        <segue destination="dwJ-aD-KED" kind="presentation" id="zY5-9y-HPq"/>
+                        <segue destination="dwJ-aD-KED" kind="presentation" identifier="oldUser" id="zY5-9y-HPq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MOy-Ix-FNE" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -733,7 +732,7 @@
                                                                     <action selector="SavebuttonPressed:" destination="Fbt-dx-E1n" eventType="touchUpInside" id="mxS-Oz-D47"/>
                                                                 </connections>
                                                             </button>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gVv-se-spJ" customClass="RaisedButton" customModule="Material">
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gVv-se-spJ" userLabel="Sign Out" customClass="RaisedButton" customModule="Material">
                                                                 <rect key="frame" x="207.00000000000003" y="0.0" width="98.666666666666714" height="40"/>
                                                                 <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <constraints>
@@ -746,7 +745,14 @@
                                                                     <userDefinedRuntimeAttribute type="color" keyPath="backgroundColor">
                                                                         <color key="value" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                     </userDefinedRuntimeAttribute>
+                                                                    <userDefinedRuntimeAttribute type="string" keyPath="title" value="Sign Out"/>
+                                                                    <userDefinedRuntimeAttribute type="color" keyPath="titleColor">
+                                                                        <color key="value" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                    </userDefinedRuntimeAttribute>
                                                                 </userDefinedRuntimeAttributes>
+                                                                <connections>
+                                                                    <action selector="logOut:" destination="btL-Ru-6Bn" eventType="touchUpInside" id="J5V-pf-PLz"/>
+                                                                </connections>
                                                             </button>
                                                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HaZ-jk-TY2">
                                                                 <rect key="frame" x="314.66666666666674" y="0.0" width="79.333333333333314" height="40"/>
@@ -806,6 +812,7 @@
                         <outlet property="phyphone" destination="tES-1L-KYl" id="KjI-TK-AYm"/>
                         <outlet property="picture" destination="TbO-1a-Mzr" id="yzZ-bV-Y8y"/>
                         <outlet property="weight" destination="dsI-bk-0YG" id="rJC-ht-Ho9"/>
+                        <segue destination="BYZ-38-t0r" kind="presentation" identifier="signOut" id="BJT-ek-2zb"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jiP-TE-Mhj" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1598,7 +1605,7 @@
                                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3Mo-we-g8X" userLabel="Name and Image">
                                                 <rect key="frame" x="0.0" y="17" width="394" height="80"/>
                                                 <subviews>
-                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="grey_camera_icon" translatesAutoresizingMaskIntoConstraints="NO" id="kKP-px-xeT">
+                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="camera_icon" translatesAutoresizingMaskIntoConstraints="NO" id="kKP-px-xeT">
                                                         <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="80" id="p4Y-R2-9DP"/>
@@ -2156,7 +2163,7 @@
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="40" id="v4T-ML-48L"/>
                                                                 </constraints>
-                                                                <state key="normal" title="Cancel">
+                                                                <state key="normal" title="Sign Out">
                                                                     <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 </state>
                                                                 <userDefinedRuntimeAttributes>
@@ -2164,6 +2171,9 @@
                                                                         <color key="value" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                     </userDefinedRuntimeAttribute>
                                                                 </userDefinedRuntimeAttributes>
+                                                                <connections>
+                                                                    <action selector="SignOut:" destination="Fbt-dx-E1n" eventType="touchUpInside" id="jfx-fO-HjO"/>
+                                                                </connections>
                                                             </button>
                                                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Bz0-qI-yRM">
                                                                 <rect key="frame" x="314.66666666666674" y="0.0" width="79.333333333333314" height="40"/>
@@ -2998,7 +3008,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3Fz-al-Zpo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4624.8000000000002" y="-785.75712143928047"/>
+            <point key="canvasLocation" x="5441" y="-1004"/>
         </scene>
     </scenes>
     <resources>
@@ -3011,12 +3021,11 @@
         <image name="camera_icon" width="85" height="85"/>
         <image name="cyan" width="170" height="170"/>
         <image name="green" width="170" height="170"/>
-        <image name="grey_camera_icon" width="133" height="123"/>
         <image name="profile_photo" width="42" height="42"/>
         <image name="red" width="170" height="170"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="yr6-5G-hOt"/>
-        <segue reference="aRi-PS-tfm"/>
+        <segue reference="lPV-Z6-tD4"/>
     </inferredMetricsTieBreakers>
 </document>
