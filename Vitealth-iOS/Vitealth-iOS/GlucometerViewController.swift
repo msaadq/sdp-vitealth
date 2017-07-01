@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class GlucometerViewController: UIViewController {
 
@@ -14,19 +15,32 @@ class GlucometerViewController: UIViewController {
     @IBOutlet weak var readingProgress: UIProgressView!
     @IBOutlet weak var bglValue: UILabel!
     
+    var latest_bgl = 0
+    var bgl_accessed = true
     
+    static var ref: FIRDatabaseReference!
     
     var MealCarbs:Int=0
     var BGL:UInt32=0
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        GlucometerViewController.ref = FIRDatabase.database().reference()
         // Do any additional setup after loading the view.
         
         bglValue.text = "BGL = " + "(Pebble Not Connected)"
         pebbleStatus.text = "Not Connected"
         readingProgress.progress = 0.0
         print(MealCarbs)
+        
+        
+        
+        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        let distanceRef = GlucometerViewController.ref.child("demo")
+        
+        distanceRef.child("bgl_accessed").setValue(true)
     }
 
     override func didReceiveMemoryWarning() {
@@ -57,10 +71,27 @@ class GlucometerViewController: UIViewController {
         pebbleStatus.text = "Connected"
         pebbleStatus.textColor = UIColor.green
         readingProgress.progress = 1
-        bglValue.text = "BGL = " + "\(randomBGL)"+" mg/dl "
+        self.bglValue.text = "BGL = calculating..."
         
 
-      
+        let refHandle = GlucometerViewController.ref.child("demo").observe(FIRDataEventType.value, with: { (snapshot) in
+            
+            if let demo = snapshot.value as? NSDictionary {
+                
+                self.bgl_accessed = demo["bgl_accessed"] as! Bool!
+                self.latest_bgl = demo["latest_bgl"] as! Int!
+                
+                if !self.bgl_accessed {
+                    self.bglValue.text = "BGL = \(String(self.latest_bgl)) mg/dl"
+                } else {
+                    self.bglValue.text = "BGL = calculating..."
+                }
+            }
+            
+        }) { (error) in
+            print(error.localizedDescription)
+            
+        }
 
         
     }

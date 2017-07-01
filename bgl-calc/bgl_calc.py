@@ -6,6 +6,7 @@ Created on Fri Feb 03 11:13:18 2017
 """
 
 import numpy as np
+import scipy.io as sio
 
 def sigmoid(x):
     return 1/(1+np.exp(-x)) 
@@ -34,7 +35,7 @@ def BGLCalcANN(opticald1,opticald2,opticald3,realbgl=0):
     w3 = np.array([2.0734,1.4818,1.0253,1.0672,-1.6974,0.2694,1.8781,-2.4238,0.0682,-1.0634])
     b = np.array([3.2548,2.1903,1.6855,0.9870,0.2725,-0.4620,1.1163,-1.1534,2.2939,-2.6764])
     epochs=600000
-    learningrate=5
+    learningrate=0.01
     if accurate_bgl==0:
         # Feed forward through layers 1, and 2
         x = (w1*opdens1 +w2*opdens2 +w3*opdens3) + b
@@ -42,9 +43,10 @@ def BGLCalcANN(opticald1,opticald2,opticald3,realbgl=0):
         bgl=sigmoid(x)
         #print(bgl)
         return np.array([bgl.mean()])
+        
     else:  #if bgl given , back propagate
     
-        for epoch in xrange(epochs):
+        for epoch in range(0, epochs):
              # Feed forward through layers 1, and 2
             x = (w1*opdens1 +w2*opdens2 +w3*opdens3) + b
             #print(sigmoid(x))
@@ -96,14 +98,18 @@ def BGLCalcANN(opticald1,opticald2,opticald3,realbgl=0):
        
         
             if (epoch% 10000) == 0:
-                print "E-rror:" + str(np.mean(np.abs(calc_meansqerror(accurate_bgl,bgl.mean()))))
+                print( "E-rror:" + str(np.mean(np.abs(calc_meansqerror(accurate_bgl,bgl.mean())))))
+
+            
                 
                 
-                
+        print(w1)
+        print(w2)
+        print(w3) 
+
         return np.array([bgl.mean(),np.mean(np.abs(calc_meansqerror(accurate_bgl,bgl.mean())))])
         
 
-        
-#BGLCalcANN(2.03,4.09,3.09,170)
+print(BGLCalcANN(12, 23, 34))
         
         

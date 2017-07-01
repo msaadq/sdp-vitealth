@@ -258,7 +258,7 @@ class DashboardViewController: UIViewController {
                         var dinner_units:Int = 0
                         var nonmeal_units:Int = 0
                         var averageBGL:Int = -1
-                        let intfetchDate=NSDate(timeIntervalSince1970:TimeInterval(int_nowtime-(activeDays*86400)))  //replace 3 with active days
+                        let intfetchDate=NSDate(timeIntervalSince1970:TimeInterval(int_nowtime-(6*86400)))  //replace 3 with active days
                        
                         let fechDate=dateFormatter.string(from: intfetchDate as Date)
                          print("display from ",fechDate)

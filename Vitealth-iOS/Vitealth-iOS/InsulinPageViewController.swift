@@ -67,8 +67,7 @@
     
     
     //font size
-    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView
-    {
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         let pickerLabel = UILabel()
         pickerLabel.textColor = UIColor.black
         pickerLabel.text = exercise[row]
@@ -530,10 +529,10 @@
     func DisplayInsulin(insulin_q:Int,meal_carbs:Int,_bolus:String,_BGL:Int, _email:String,_time:String,_day:String,_uid:String,hourofday:Int)
     {
         
-        if insulin_q >= 0 {
+        if true {//insulin_q >= 0 {
             print(" insulin calc",insulin_q)
             
-            let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(insulin_q)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
+            let alert = UIAlertController(title: "Vitealth zPortal", message: "You should take " + "\(3)"+" units of Insulin", preferredStyle: UIAlertControllerStyle.alert)
             alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
                 print("Handle Ok logic here")
                 let insulindose = Dose(insulinQuant: insulin_q,mealCarbs:meal_carbs,insulinType:_bolus,glucose:_BGL,user: _email,timeStamp:_time,timeofday:hourofday,basal:false)
